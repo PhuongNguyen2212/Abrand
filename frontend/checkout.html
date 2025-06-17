@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - GKH Jewelry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @font-face {
+            font-family: 'MalayalamMN';
+            src: url('fonts/malayalam-mn.ttf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Medium';
+            src: url('fonts/SF-Pro-Display-Medium.otf') format('opentype');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Bold';
+            src: url('fonts/SF-Pro-Display-Bold.otf') format('opentype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: '1KFacultyGlyphic';
+            src: url('fonts/1KFacultyGlyphic.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Regular';
+            src: url('fonts/SF-Pro-Display-Regular.otf') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            gap: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .cart-image-container {
+            background-color: #f8f8f8;
+            padding: 20px;
+        }
+
+        .cart-image-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .error-message {
+            color: #dc2626;
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 1rem;
+        }
+
+        .cart-item .content {
+            display: flex;
+            flex-direction: column;
+            gap: 10%;
+            width: 70%;
+            height: 50%;
+        }
+
+        .cart-item .content .item {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            width: 100%;
+            font-family: 'SF-Pro-Display-Bold';
+            font-weight: 700;
+        }
+
+        .cart-item .content .price {
+            display: flex;
+            gap: 1%;
+            font-family: 'SF-Pro-Display-Bold';
+            font-weight: 700;
+            align-items: center;
+        }
+
+        .cart-item .content .price .sale-price {
+            color: #B68405;
+            font-size: 0.9rem;
+        }
+
+        .cart-item .content .price .original-price {
+            color: grey;
+            font-size: 0.6rem;
+        }
+
+        .cart-item .content .material-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 2% 0;
+            gap: 0.3rem;
+        }
+
+        .cart-Items .content .material-section .materials {
+            font-size: 0.6rem;
+            text-decoration: underline;
+            font-family: 'SF-Pro-Display-Bold';
+            font-weight: 700;
+            background-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .so-luong,
+        .size-section label,
+        .size-section select {
+            font-family: '1KFacultyGlyphic';
+            color: #000;
+            font-weight: 100;
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 max-w-4xl">
+        <h1 class="text-3xl font-bold mb-6 text-center">Thanh Toán</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Sản Phẩm Trong Giỏ Hàng</h2>
+            <div id="cartItems" class="space-y-4"></div>
+            <div class="mt-4 text-right">
+                <p class="text-lg font-semibold">Tổng Tiền: <span id="totalPrice">0 VND</span></p>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-4">Thông Tin Khách Hàng</h2>
+            <form id="paymentForm" class="space-y-4">
+                <div>
+                    <label for="fullName" class="block text-sm font-medium text-gray-700">Họ và Tên</label>
+                    <input type="text" id="fullName" name="fullName" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Số Điện Thoại</label>
+                    <input type="tel" id="phone" name="phone" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Địa Chỉ Giao Hàng</label>
+                    <textarea id="address" name="address" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">Xác
+                        Nhận Đặt Hàng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="main-page.js"></script>
+</body>
+
+</html>

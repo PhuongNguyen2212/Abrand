@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận Đơn Hàng - GKH Jewelry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @font-face {
+            font-family: 'MalayalamMN';
+            src: url('malayalam-mn.ttf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Medium';
+            src: url('SF-Pro-Display-Medium.otf') format('opentype');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'SF-Pro-Display-Bold';
+            src: url('SF-Pro-Display-Bold.otf') format('opentype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            font-family: 'MalayalamMN', sans-serif;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s ease;
+        }
+
+        .cart-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .cart-image-container {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .cart-image-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 0.25rem;
+        }
+
+        .error-message {
+            color: #dc2626;
+            text-align: center;
+            font-size: 1rem;
+            padding: 1rem;
+            background-color: #fee2e2;
+            border-radius: 0.5rem;
+            font-family: 'SF-Pro-Display-Medium';
+        }
+
+        .cart-Items {
+            flex-grow: 1;
+        }
+
+        .cart-Items .content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .cart-Items .content .item {
+            font-size: 1rem;
+            font-family: 'SF-Pro-Display-Bold';
+            font-weight: 700;
+            color: #1f2937;
+            text-transform: uppercase;
+        }
+
+        .cart-Items .content .price {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            font-family: 'SF-Pro-Display-Bold';
+            font-weight: 700;
+        }
+
+        .cart-Items .content .price .sale-price {
+            color: #b45309;
+            font-size: 1rem;
+        }
+
+        .cart-Items .content .price .original-price {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6 max-w-3xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900" style="font-family: 'SF-Pro-Display-Bold';">Xác Nhận Đơn Hàng
+            </h1>
+            <p class="text-gray-600 mt-2" style="font-family: 'SF-Pro-Display-Medium';">Cảm ơn bạn đã mua sắm tại GKH
+                Jewelry!</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4" style="font-family: 'SF-Pro-Display-Bold';">Thông
+                    Tin Khách Hàng</h2>
+                <div class="grid grid-cols-1 gap-3 text-gray-700" style="font-family: 'SF-Pro-Display-Medium';">
+                    <p><span class="font-medium">Họ và Tên:</span> <span id="fullName">N/A</span></p>
+                    <p><span class="font-medium">Số Điện Thoại:</span> <span id="phone">N/A</span></p>
+                    <p><span class="font-medium">Địa Chỉ:</span> <span id="address">N/A</span></p>
+                    <p><span class="font-medium">Phương Thức Thanh Toán:</span> <span id="paymentMethod">N/A</span></p>
+                </div>
+            </div>
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4" style="font-family: 'SF-Pro-Display-Bold';">Sản
+                    Phẩm Đã Đặt</h2>
+                <div id="cartItems" class="space-y-4"></div>
+                <div class="mt-6 text-right">
+                    <p class="text-lg font-semibold text-gray-900" style="font-family: 'SF-Pro-Display-Bold';">Tổng
+                        Tiền: <span id="totalPrice">0 VND</span></p>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="index.html"
+                    class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                    style="font-family: 'SF-Pro-Display-Medium';">Về Trang Chủ</a>
+            </div>
+        </div>
+    </div>
+    <script src="main-page.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jewelry News</title>
+    <link rel="stylesheet" href="news-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div id="cart-announcement" class="cart-announcement"> <img src="img/i.png" alt=""> Your shopping bag is empty</div>
+    <header class="nav-bar">
+        <a href="index.html" class="brand-link">
+            <div class="brand">GIANG KIM HOAN</div>
+        </a>
+        <div class="nav-icons">
+            <li class="shopping-bag">
+                <img src="img/shoppingbag.png" alt="Giỏ Hàng" aria-label="Giỏ Hàng" class="icon">
+            </li>
+            <li class="search">
+                <img src="img/searchbar.png" alt="Tìm kiếm" aria-label="Tìm kiếm" class="icon">
+            </li>
+            <li class="menu xai-sidebar-toggle" id="xai-sidebar-toggle">
+                <img src="img/hamburger-menu.png" alt="Menu" aria-label="Menu" class="icon">
+            </li>
+        </div>
+        <!-- Single Sidebar -->
+        <div id="xai-sidebar" class="xai-sidebar">
+            <div class="xai-close-btn" id="xai-sidebar-close">
+                <div><img src="img/close.png" alt=""></div>
+            </div>
+            <!-- Main Menu Content -->
+            <div id="xai-main-content" class="xai-content xai-content-visible">
+                <div class="xai-menu-item-container" data-title="TRANG SỨC">
+                    <div class="xai-menu-item">TRANG SỨC</div>
+                    <span>></span>
+                </div>
+                <div class="xai-menu-item-container" data-title="DỊCH VỤ">
+                    <div class="xai-menu-item">DỊCH VỤ</div>
+                    <span>></span>
+                </div>
+                <div class="xai-menu-item-container" data-title="QUÝ TRÌNH SẢN XUẤT">
+                    <div class="xai-menu-item">QUÝ TRÌNH SẢN XUẤT</div>
+                    <span>></span>
+                </div>
+                <div class="xai-menu-item-container" data-title="ƯU ĐÃI">
+                    <div class="xai-menu-item">ƯU ĐÃI</div>
+                    <span>></span>
+                </div>
+                <div class="xai-menu-item-container" data-title="VỀ CHÚNG TÔI">
+                    <div class="xai-menu-item">VỀ CHÚNG TÔI</div>
+                    <span>></span>
+                </div>
+                <div class="xai-menu-item-container" data-title="TIN TỨC">
+                    <div class="xai-menu-item">TIN TỨC</div>
+                    <span>></span>
+                </div>
+                <div class="xai-menu-item-container" data-title="LOGIN">
+                    <div class="xai-menu-item">LOGIN</div>
+                    <span>></span>
+                </div>
+            </div>
+            <!-- First-Level Submenu Content -->
+            <div id="xai-submenu-content" class="xai-content xai-content-hidden">
+                <div class="flex items-center">
+                    <div class="xai-back-btn" id="xai-back-button">
+                        <div></div>
+                        <span>Back</span>
+                    </div>
+                    <div id="xai-submenu-title" class="text-lg font-bold"></div>
+                </div>
+                <div id="xai-submenu-list"></div>
+            </div>
+            <!-- Second-Level Submenu Content -->
+            <div id="xai-sub-submenu-content" class="xai-content xai-content-hidden">
+                <div class="flex items-center">
+                    <div class="xai-back-btn" id="xai-sub-submenu-back-button">
+                        <div></div>
+                        <span>Back</span>
+                    </div>
+                    <div id="xai-sub-submenu-title" class="text-lg font-bold"></div>
+                </div>
+                <div id="xai-sub-submenu-list"></div>
+            </div>
+            <div class="contact-info">
+                <span>Chúng tôi nếu giá đã chọn?</span>
+                <span>+84 88843434</span>
+            </div>
+        </div>
+        <div class="modal-overlay" id="cartModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>ADDED TO SHOPPING BAG</h2>
+                    <button class="close-btn" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Product items will be dynamically inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="checkout-btn" onclick="checkout()">THANH TOÁN</button>
+                    <button class="zalo-btn" onclick="contactZalo()">LIÊN HỆ TRỰC TIẾP ZALO</button>
+                </div>
+            </div>
+        </div>
+        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." aria-label="Nhập để tìm kiếm sản phẩm">
+        <div id="searchResults" class="search-results"></div>
+    </header>
+    <h2 class="news-title">Tin tức</h2>
+    <div class="container">
+        <div class="news-grid">
+            <div class="news-item">
+                <img src="img/61.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>NGHỆ THUẬT TẠI CÔNG XƯỞNG SỨC CHÍNH GIANG KIM HOÀN</h3>
+                    <p>Chỉ tại một nhà máy ở ngoại ô Việt Nam, từng chiếc nhẫn, vòng cổ được chế tác bởi những nghệ nhân
+                        lành nghề, đem đến những tuyệt tác trang sức không chỉ đẹp mà còn chứa đựng giá trị văn hóa và
+                        nghệ thuật vượt thời gian.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/62.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>GIANG KIM HOÀN – “TUYỆT ĐỈNH” TRANG SỨC ĐỘC BẢN ĐẦU TIÊN TẠI VIỆT NAM</h3>
+                    <p>Trang sức độc bản – nghe có vẻ xa xỉ, nhưng với Giang Kim Hoàn, đó là sự kết hợp hoàn hảo giữa
+                        nghệ thuật và cảm xúc. Mỗi chiếc nhẫn, vòng cổ được chế tác đều mang một câu chuyện riêng, không
+                        thể tìm thấy ở bất kỳ đâu.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/63.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>CHỈ TẠC TRANG SỨC ĐỘC BẢN LÀ GÌ VÀ VÌ SAO NGHỆ NHÂN ĐỈNH CAO GỌI CHÚNG LÀ "NGHỆ THUẬT"?</h3>
+                    <p>Trang sức độc bản không chỉ là một món đồ trang sức, mà còn là một tác phẩm nghệ thuật. Được chế
+                        tác từ những vật liệu quý giá nhất, mỗi sản phẩm là một câu chuyện, một cảm xúc, và một dấu ấn
+                        cá nhân không thể sao chép.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/64.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>SỰ KHÁC BIỆT GIỮA SỨC CHÍNH ĐỘC BẢN VÀ TRANG SỨC SẢN XUẤT CHÍNH NGHĨA?</h3>
+                    <p>Với nhiều người, trang sức chỉ là món đồ trang trí, nhưng với những ai yêu nghệ thuật, trang sức
+                        độc bản là một tuyên ngôn. Hãy cùng tìm hiểu sự khác biệt giữa trang sức độc bản và trang sức
+                        sản xuất hàng loạt.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/65.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>QUY TRÌNH CHẾ TÁC TRANG SỨC ĐỘC BẢN TẠI GIANG KIM HOÀN</h3>
+                    <p>Giang Kim Hoàn không chỉ chú trọng đến thiết kế mà còn đầu tư vào quy trình chế tác. Từ bản vẽ
+                        đầu tiên đến sản phẩm hoàn thiện, mỗi bước đều được thực hiện bởi những nghệ nhân lành nghề với
+                        sự tỉ mỉ tuyệt đối.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/66.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>GIÁ TRỊ CỐT LÕI CỦA TRANG SỨC ĐỘC BẢN TẠI GIANG KIM HOÀN: CHẤT LƯỢNG, SÁNG TẠO, VÀ TÌNH YÊU</h3>
+                    <p>Giang Kim Hoàn luôn chú trọng đến chất lượng, sự sáng tạo và tình yêu trong từng sản phẩm. Mỗi
+                        chiếc nhẫn, vòng cổ không chỉ là một món đồ trang sức, mà còn là một tác phẩm nghệ thuật mang
+                        đậm dấu ấn cá nhân.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/67.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>XU HƯỚNG CHẾ TÁC TRANG SỨC ĐỘC BẢN CAO CẤP TẠI GIANG KIM HOÀN: CHẤT LƯỢNG, SÁNG TẠO, VÀ TÌNH YÊU
+                    </h3>
+                    <p>Giang Kim Hoàn đang dẫn đầu xu hướng chế tác trang sức độc bản cao cấp tại Việt Nam. Với sự kết
+                        hợp giữa nghệ thuật và công nghệ, mỗi sản phẩm đều mang đến sự khác biệt và đẳng cấp.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="img/68.png" alt="News Image">
+                <div class="news-content">
+                    <span>News</span>
+                    <h3>GIANG KIM HOÀN: "TUYỆT ĐỈNH" TRANG SỨC ĐỘC BẢN GKH</h3>
+                    <p>Bạn yêu thích sự độc đáo, muốn một món trang sức duy nhất không trùng lặp? Hãy đến với Giang Kim
+                        Hoàn, nơi nghệ thuật và sự sáng tạo hòa quyện để tạo nên những tuyệt phẩm trang sức độc bản.</p>
+                    <a href="#">Đọc thêm</a>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-button-container">
+            <button class="more-button">Xem thêm</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer">
+            <div class="footer-container first">
+                <div class="column help">
+                    <h3>Chúng tôi có thể giúp gì cho bạn</h3>
+                    <div class="content-wrapper">
+                        <ul>
+                            <li><a href="product-page.html">Giới thiệu</a></li>
+                            <li><a href="chinh-sach-bao-mat.html">Chính sách bảo mật</a></li>
+                            <li><a href="dieu-khoan-dich-vu.html">Điều khoản dịch vụ</a></li>
+                            <li><a href="doi-tra.html">Đổi trả</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column service">
+                    <h3>Về chúng tôi</h3>
+                    <div class="content-wrapper">
+                        <ul>
+                            <li><a href="ve-giang-kim-hoan.html">Về Giang Kim Hoàn</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column notification">
+                    <h3>Đăng ký nhận email</h3>
+                    <div class="content-wrapper">
+                        <ul>
+                            <li>Đăng ký nhận thông tin về sản phẩm và ưu đãi mới nhất từ GKH</li>
+                        </ul>
+                        <div class="input-wrapper">
+                            <input type="text" class="input-box" placeholder="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-container second">
+                <div class="column help">
+                    <h3>Dịch vụ của Giang Kim Hoan</h3>
+                    <div class="content-wrapper">
+                        <ul>
+                            <li><a href="custom-trang-suc.html">Custom trang sức</a></li>
+                            <li><a href="dat-lich-hen.html">Đặt lịch hẹn tại cửa hàng</a></li>
+                            <li><a href="art-of-gifting.html">Art of gifting</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column notification">
+                    <h3>Tin tức</h3>
+                    <div class="content-wrapper">
+                        <ul>
+                            <li><a href="news-page.html">Tin tức trang sức</a></li>
+                            <li><a href="tuyen-dung.html">Tuyển dụng</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="brand">
+                GIANG<br>KIM<br> HOAN
+            </div>
+        </div>
+    </footer>
+    <script src="main-page.js"></script>
+</body>
+
+</html>
