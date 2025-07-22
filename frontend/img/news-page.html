@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="product-details.css">
-    <title>Chi tiết sản phẩm - Giang Kim Hoàn Jewellry</title>
+    <title>Tin tức - Giang Kim Hoàn Jewellry</title>
+    <link rel="stylesheet" href="news-page.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -71,11 +70,10 @@
             <div id="xai-sub-submenu-list"></div>
         </div>
         <div class="contact-info">
-            <span>Chúng tôi có thể giúp gì cho bạn?</span>
+            <span>Chúng tôi nếu giá đã chọn?</span>
             <span>+84 88843434</span>
         </div>
     </div>
-    <!-- Modal overlay -->
     <div class="modal-overlay" id="cartModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -90,7 +88,6 @@
                 <button class="zalo-btn" onclick="contactZalo()">LIÊN HỆ TRỰC TIẾP ZALO</button>
             </div>
         </div>
-    </div>
     </div>
     <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." aria-label="Nhập để tìm kiếm sản phẩm">
     <div id="searchResults" class="search-results"></div>
@@ -110,68 +107,18 @@
             </li>
         </div>
     </header>
-
-    <div id="product-details"></div>
-
+    <h2 class="news-title">Tin tức</h2>
     <div class="container">
-        <div class="row-layout">
-            <div class="left-container">
-                <div class="section expandable" id="product-details-section">
-                    <div class="content-wrapper">
-                        <h2 class="section-title">CHI TIẾT SẢN PHẨM</h2>
-                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
-                    </div>
-                    <div class="section-content" id="product-description-content"></div>
-                </div>
-                <div class="section expandable" id="material-section">
-                    <div class="content-wrapper">
-                        <h2 class="section-title">CHẤT LIỆU</h2>
-                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
-                    </div>
-                    <div class="section-content" id="material-content">
-                        <ul>
-                            <li><strong>Mẫu Sức:</strong> <span id="product-type-content"></span></li>
-                            <li><strong>Chất Liệu:</strong> <span id="product-material-content"></span></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="section">
-                    <div class="content-wrapper">
-                        <h2 class="section-title">BẢO DƯỠNG SẢN PHẨM</h2>
-                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
-                    </div>
-                    <div class="section-content">
-                        <!-- Maintenance instructions -->
-                    </div>
-                </div>
-            </div>
-            <div class="right-container">
-                <div class="section">
-                    <h3>MÔ TẢ SẢN PHẨM</h3>
-                    <p class="product-code"><strong id="product-code">BV0001</strong></p>
-                    <p id="product-description"></p>
-                    <ul>
-                        <li><strong>Mẫu Sức:</strong> <span id="product-type"></span></li>
-                        <li><strong>Kiểu Dây:</strong> Chuyền</li>
-                        <li><strong>Chất Liệu:</strong> <span id="product-material-list"></span></li>
-                    </ul>
-                    <p>Sở hữu món dây chuyền sắc tượng trưng cho ánh sáng vĩnh cửu, mang đến vẻ đẹp trường tồn và
-                        phong cách nổi bật vượt thời gian.</p>
-                    <div class="owner-description">
-                        <p>Sản phẩm được sản xuất trực tiếp tại GKH.</p>
-                        <p class="note">GKH là thương hiệu hàng đầu về sản phẩm cao cấp trên 15 năm kinh nghiệm trong
-                            lĩnhvực chế tác.</p>
-                    </div>
-                    <p class="more">Đọc thêm</p>
-                </div>
-            </div>
+        <div class="news-grid active" id="newsGrid">
+            <!-- Static items will be replaced by dynamic content -->
+        </div>
+
+        <div class="page-button-container" id="pagination"></div>
+
+        <div class="mobile-button-container">
+            <button class="more-button" id="showNews">Xem thêm</button>
         </div>
     </div>
-    <h2>You might also like</h2>
-    <section class="new-arrivals-container" id="suggestion">
-
-
-    </section>
     <footer>
         <div class="footer">
             <div class="footer-container first">
@@ -249,3 +196,5 @@
     </footer>
     <script src="main-page.js"></script>
 </body>
+
+</html>

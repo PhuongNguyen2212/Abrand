@@ -49,11 +49,15 @@
 }
 
 .nav-bar {
+    top: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     padding: 1.5% 0%;
+    position: fixed;
+    background-color: white;
+    z-index: 1000;
 }
 
 .nav-bar a {
@@ -92,7 +96,7 @@
 
 .shopping-bag .cart-badge {
     position: absolute;
-    top: 20%;
+    top: 27%;
     left: 40%;
     transform: translateX(-50%);
     color: grey;
@@ -108,12 +112,12 @@
     top: 0;
     right: 0;
     height: 100%;
-    width: 300px;
+    width: 100%;
     background: white;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
-    transform: translateX(100%);
+    transform: translateY(100%);
     transition: transform 0.3s ease-in-out;
-    z-index: 1000;
+    z-index: 10010;
     display: flex;
     flex-direction: column;
     padding: 0 10px;
@@ -121,7 +125,7 @@
 }
 
 .xai-sidebar.xai-active {
-    transform: translateX(0);
+    transform: translateY(0);
 }
 
 .xai-content {
@@ -150,6 +154,20 @@
     position: relative;
     pointer-events: auto;
     padding-top: 100px;
+    max-height: calc(90vh - 200px);
+    /* Adjust based on header and contact-info height */
+    /* Ensure a fixed or maximum height */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    -ms-overflow-style: none;
+    /* Hide scrollbar for IE and Edge */
+    scrollbar-width: none;
+    /* Hide scrollbar for Firefox */
+    z-index: 0;
+}
+
+#xai-content-visible::-webkit-scrollbar {
+    display: none;
 }
 
 .xai-close-btn {
@@ -160,15 +178,15 @@
     cursor: pointer;
     padding: 10px;
     background-color: #000;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
+    z-index: 3000;
 }
 
 .xai-close-btn div {
-    z-index: 3000;
     color: white;
     display: flex;
     justify-content: center;
@@ -176,7 +194,7 @@
 }
 
 .xai-close-btn div img {
-    width: 60%;
+    width: 40%;
 }
 
 .xai-back-btn {
@@ -187,6 +205,11 @@
     flex-direction: row;
     gap: 10px;
     align-items: center;
+
+}
+
+.xai-back-btn img {
+    width: 5px;
 }
 
 .xai-back-btn div {
@@ -198,6 +221,7 @@
     font-weight: 700;
     font-size: 0.8rem;
     text-decoration: underline;
+    text-transform: uppercase;
 }
 
 .xai-menu-item {
@@ -241,18 +265,20 @@
 }
 
 .contact-info {
-    width: 100%;
-    left: 0;
     position: absolute;
     bottom: 20px;
+    /* Position at the bottom of the parent */
     font-size: 14px;
     color: #666;
     border-top: 1px solid gray;
-    padding: 0 10px;
+    padding: 0 20px;
     line-height: 2em;
     display: flex;
     flex-direction: column;
     padding-top: 50px;
+    background-color: white;
+    justify-content: flex-end;
+    width: 100%;
 }
 
 .contact-info span:nth-child(1) {
@@ -323,7 +349,7 @@
 }
 
 .search-results {
-    position: absolute;
+    position: fixed;
     top: 120px;
     /* Below searchInput (20px + 40px height) */
     left: 50%;
@@ -364,6 +390,10 @@
     font-family: 'SF-Pro-Display-Bold';
     font-weight: 700;
     width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .search-results .search-result-item .brand {
@@ -371,12 +401,14 @@
     color: grey;
     font-family: 'SF-Pro-Display-Bold';
     font-weight: 700;
+    text-transform: uppercase;
 }
 
 .search-results .search-result-item .item {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     color: #000;
+    text-transform: uppercase;
 }
 
 .search-results .search-result-item .price {
@@ -423,7 +455,7 @@
 
 .modal-overlay {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 10%;
     right: 17%;
     box-shadow: 0 4px 8px rgba(108, 108, 108, 0.5), 0 6px 20px rgba(0, 0, 0, 0.3);
@@ -467,7 +499,7 @@
     padding: 1%;
     background-color: white;
     border: none;
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 
 .modal-body {
@@ -627,6 +659,7 @@
 .arrivals-item {
     display: flex;
     align-items: center;
+    margin-top: 60px;
 }
 
 .arrivals-item .brand {
@@ -863,10 +896,23 @@
     padding: 15px;
     display: none;
     background-color: #fff;
+    transition: max-height 1s ease-out;
 }
 
 .section-content.active {
+    max-height: auto;
+    /* Adjust this value based on expected content height */
     display: block;
+}
+
+
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+.arrow.rotated {
+    transform: rotate(180deg);
+    z-index: 0;
 }
 
 
@@ -880,9 +926,21 @@
     text-decoration: underline;
 }
 
+.section .content-wrapper {
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section .content-wrapper img {
+    width: 2%;
+    height: 3%;
+}
+
 .section h2 {
     font-size: 0.8rem;
-    border-bottom: 1px solid #ccc;
     padding: 4% 0;
     font-weight: 700;
     justify-content: flex-start;
@@ -901,7 +959,7 @@
     margin-bottom: 0.5%;
     font-family: '1KFacultyGlyphic';
     font-weight: 400;
-
+    z-index: 0;
 }
 
 .section .product-code {
@@ -914,6 +972,7 @@
     list-style-type: disc;
     padding-left: 5%;
     position: relative;
+
 }
 
 .section p.note {
@@ -956,6 +1015,68 @@ h2 {
 
 }
 
+/* Suggestion Carousel */
+.suggestion-carousel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.suggestion-products {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 10px 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    width: 1260px; /* Display 4 products: 4 * 250px + 3 * 20px */
+}
+
+.suggestion-products::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome/Safari */
+}
+
+.suggestion-products a {
+    flex: 0 0 auto;
+    width: 300px;
+    scroll-snap-align: start;
+    display: block; /* Ensure all products are visible */
+}
+
+/* Chevron Styles */
+.icon-container {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #F8F8F8;
+}
+
+.icon-container:hover {
+    opacity: 1;
+}
+
+.icon-container i {
+    font-size: 12px;
+    color: black;
+}
+
+.left-chevron,
+.right-chevron {
+    flex-shrink: 0; /* Prevent chevrons from shrinking */
+}
+
+/* New Arrivals Container */
 .new-arrivals {
     width: 100%;
     display: flex;
@@ -967,21 +1088,21 @@ h2 {
     width: 100%;
     display: flex;
     justify-content: center;
-    /* center the whole grid horizontally */
     align-items: start;
-    /* align items to the top of each grid cell */
     flex-direction: row;
-    padding: 0 3%;
+    padding: 0 1%;
 }
 
 .new-arrivals-container a {
     text-decoration: none;
 }
 
-.new-arrivals-container a:nth-child(n+5) {
-    display: none;
+/* Override for suggestion carousel to prevent hiding products */
+.suggestion-carousel .new-arrivals-container a:nth-child(n+5) {
+    display: block; /* Ensure 5th and subsequent products are visible in carousel */
 }
 
+/* Product Item Styles */
 .new-arrivals-item {
     display: flex;
     flex-direction: column;
@@ -1000,10 +1121,11 @@ h2 {
 }
 
 .new-arrivals-item .brand {
-    font-size: 1rem;
+    font-size: 0.5rem;
     color: grey;
     font-family: 'SF-Pro-Display-Bold';
     font-weight: 700;
+    text-transform: uppercase;
 }
 
 .new-arrivals-item .item {
@@ -1018,16 +1140,13 @@ h2 {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    /* Ensures the container spans the full width of its parent */
     gap: 15px;
-    /* Adds space between the spans, if desired */
     align-items: center;
     margin-top: 2%;
 }
 
 .new-arrivals-item .price .sale-price {
     color: #B68405;
-    /* Example: highlight sale price */
     font-family: 'SF-Pro-Display-Medium';
     font-weight: 500;
     font-size: 0.9rem;
@@ -1043,7 +1162,6 @@ h2 {
 
 .new-arrivals-item .price .original-price {
     color: gray;
-    /* Example: dim original price */
     text-decoration: line-through;
     font-size: 0.7rem;
     font-family: 'SF-Pro-Display-Medium';
@@ -1068,7 +1186,7 @@ footer {
     /* 3 rows */
     gap: 20px;
     /* Spacing between items */
-    padding: 0 3%;
+    padding: 0 5%;
 }
 
 .column {
@@ -1077,6 +1195,10 @@ footer {
     padding: 20px;
     /* Rounded corners for a modern look */
     /* Subtle shadow */
+}
+
+.column img {
+    display: none;
 }
 
 .column h3 {
@@ -1171,7 +1293,7 @@ footer {
 footer .brand {
     text-align: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     margin-top: 10%;
     padding-top: 2%;
     color: #333;
@@ -1180,7 +1302,7 @@ footer .brand {
     padding-bottom: 5%;
     line-height: 81.6%;
     letter-spacing: 0.01em;
-    border-top: 2px solid black;
+    border-top: 1px solid rgb(197, 196, 196);
 }
 
 @media (max-width: 600px) {
@@ -1191,11 +1313,19 @@ footer .brand {
         overflow-x: hidden;
     }
 
+    .cart-announcement {
+        width: 200px;
+        top: 100px;
+        font-size: 0.8rem;
+    }
+
     .nav-bar {
         display: flex;
         width: 100%;
         justify-content: space-between;
-        padding: 7% 2%;
+        padding: 5% 3%;
+        align-items: center;
+        z-index: 1000;
     }
 
     .nav-bar .brand {
@@ -1466,6 +1596,7 @@ footer .brand {
         justify-content: center;
         align-items: center;
         background-color: #F8F8F8;
+        margin-top: 100px;
     }
 
     .arrivals-item .brand {
@@ -1558,13 +1689,17 @@ footer .brand {
         padding: 15% 0;
     }
 
+    .icon-container{
+        display: none;
+    }
+
     .new-arrivals {
         width: 100%;
         display: flex;
         align-items: center;
     }
 
-    .new-arrivals-container {
+    .suggestion-products {
         width: 100%;
         padding: 0 5%;
         display: grid;
@@ -1575,12 +1710,16 @@ footer .brand {
         gap: 2rem
     }
 
+    .suggestion-products a{
+        width: 100%;
+    }
+
     .new-arrivals-item {
         padding: 5% 0;
     }
 
     .new-arrivals-item .item {
-        font-size: 0.6rem;
+        font-size: 0.7rem;
     }
 
     .new-arrivals-item .brand {
@@ -1601,15 +1740,15 @@ footer .brand {
         grid-template-rows: repeat(6, auto);
         /* Adjust rows for content */
     }
-
     footer .brand {
-        font-size: 2rem;
+        padding-top: 30px;
+        font-size: 1.3rem;
+        margin-top: 80px;
     }
 
     .footer {
         padding: 0 0;
         padding-bottom: 10%;
-        padding-top: 10%;
     }
 
     .footer-container {
@@ -1617,26 +1756,55 @@ footer .brand {
     }
 
     .column {
-        padding: 0 5%;
+        border-bottom: 1px solid rgb(197, 196, 196);
+        padding: 6% 2%;
+        padding-top: 7%;
+    }
+    
+    .column-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .column .arrow {
+        display: block;
+        width: 3%;
+        height: 3%;
+        transition: transform 0.5s ease-out;
+        /* Matches content-wrapper transition */
+        transform: rotate(0deg);
+        /* Default state */
+    }
+
+    .column .content-wrapper.show+.column-wrapper .arrow,
+    .column-wrapper .arrow.show {
+        transform: rotate(180deg);
+        /* Rotate when content is shown */
     }
 
     .column h3 {
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.8rem;
         color: grey;
-        border-bottom: 2px solid gray;
-        padding-bottom: 5%;
+        display: flex;
+        align-items: center;
     }
 
     .column .content-wrapper {
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.5s ease-out;
-        /* Border below content */
     }
 
     .column .content-wrapper.show {
-        max-height: 100%;
+        max-height: 500px;
+        /* Large enough for most content; adjust if needed */
+    }
+
+    .input-wrapper {
+        margin-bottom: 10%;
     }
 
     .column .content-wrapper ul {
@@ -1645,7 +1813,7 @@ footer .brand {
 
     .column ul li {
         padding: 0 0;
-        font-size: 1em;
+        font-size: 0.6em;
         color: #555;
     }
 

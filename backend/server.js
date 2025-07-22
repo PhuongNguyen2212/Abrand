@@ -5,66 +5,48 @@ const cors = require("cors");
 const multer = require("multer");
 const fs = require("fs").promises;
 const path = require("path");
-const crypto = require("crypto");
 const mysql = require('mysql2/promise');
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const UPLOADS_DIR = path.join(__dirname, "Uploads");
-const ALLOWED_BRANDS = ["Cartier", "Bvlgari", "Van Cleef & Arpels", "Chrome Hearts", "GKH Jewelry"];
+const UPLOADS_DIR = path.join("/", "backend", "uploads"); // Root-level /backend/uploads directory
+const ALLOWED_BRANDS = ["Cartier", "Bvlgari", "Van Cleef & Arpels", "Chrome Hearts", "GKH Jewelry", "Louis Vuiton", "Chanel"];
 const ALLOWED_TYPES = ["Ring", "Necklace", "Bracelet", "Collar", "Earring"];
 const ALLOWED_MATERIALS = ["Vàng 10k", "Vàng 18k", "Bạc", "Bạch kim"];
+const allowedOrigins = [
+    'http://127.0.0.1:5500', // Local development (VS Code Live Server)
+    'http://localhost:3000', // Other local development (e.g., React dev server)
+    'https://giangkimhoan.com' // Production frontend domain
+];
 
-// MySQL connection pool
-let dbPool;
-
-async function initializeDatabase() {
-    try {
-        dbPool = await mysql.createPool({
-            host: process.env.DB_HOST || 'localhost',
-            user: process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || 'jewelry_store',
-            waitForConnections: true,
-            connectionLimit: 10,
-            queueLimit: 0
-        });
-
-        // Create products table if it doesn't exist
-        await dbPool.execute(`
-            CREATE TABLE IF NOT EXISTS products (
-                id VARCHAR(10) PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                brand VARCHAR(50) NOT NULL,
-                type VARCHAR(50) NOT NULL,
-                imageUrl1 VARCHAR(255),
-                imageUrl2 VARCHAR(255),
-                imageUrl3 VARCHAR(255),
-                imageUrl4 VARCHAR(255),
-                mainImageIndex TINYINT DEFAULT 0,
-                originalPrice DECIMAL(10, 2) NOT NULL,
-                salePrice DECIMAL(10, 2) NOT NULL,
-                material VARCHAR(50) NOT NULL,
-                description TEXT,
-                version INT DEFAULT 0
-            )
-        `);     
-
-        console.log("Database initialized successfully");
-    } catch (err) {
-        console.error("Error initializing database:", err);
-        throw err;
-    }
-}
+// Root endpoint for testing
+app.get('/', (req, res) => {
+    console.log('Accessed root endpoint');
+    res.set('Content-Type', 'application/json');
+    res.status(200).json({ message: 'Welcome to the Giang Kim Hoan API. Use /api endpoints for functionality.' });
+});
 
 // Middleware
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
 app.use(express.json());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, origin || '*');
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+app.get('/', (req, res) => {
+    console.log('Accessed root endpoint');
+    res.set('Content-Type', 'application/json');
+    res.status(200).json({ message: 'Welcome to the Giang Kim Hoan API. Use /api endpoints for functionality.' });
+});
 app.use("/backend/uploads", express.static(UPLOADS_DIR, {
     setHeaders: (res, filePath) => {
         console.log(`Serving file: ${filePath}`);
@@ -84,28 +66,88 @@ app.get('/favicon.ico', (req, res) => {
     });
 });
 
+// MySQL connection pool
+let dbPool;
+
+async function initializeDatabase() {
+    try {
+        dbPool = await mysql.createPool({
+            host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || '',
+            database: process.env.DB_NAME || 'jewelry_store',
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
+        });
+
+        await dbPool.execute(`
+                CREATE TABLE IF NOT EXISTS products (
+                    id VARCHAR(10) PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    brand VARCHAR(50) NOT NULL,
+                    type VARCHAR(50) NOT NULL,
+                    imageUrl1 VARCHAR(255),
+                    imageUrl2 VARCHAR(255),
+                    imageUrl3 VARCHAR(255),
+                    imageUrl4 VARCHAR(255),
+                    mainImageIndex TINYINT DEFAULT 0,
+                    originalPrice DECIMAL(10, 2) NOT NULL,
+                    salePrice DECIMAL(10, 2) NOT NULL,
+                    material VARCHAR(50) NOT NULL,
+                    description TEXT,
+                    version INT DEFAULT 0
+                )
+            `);
+
+        await dbPool.execute(`
+                CREATE TABLE IF NOT EXISTS news (
+                    id VARCHAR(10) PRIMARY KEY,
+                    title VARCHAR(255) NOT NULL,
+                    content TEXT NOT NULL,
+                    imageUrl VARCHAR(255),
+                    version INT DEFAULT 0
+                )
+            `);
+
+        console.log("Database initialized successfully");
+    } catch (err) {
+        console.error("Error initializing database:", err);
+        throw err;
+    }
+}
+
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
         try {
+            console.log("Checking/creating directory:", UPLOADS_DIR);
             await fs.mkdir(UPLOADS_DIR, { recursive: true });
             await fs.chmod(UPLOADS_DIR, 0o755);
+            console.log("Directory ready:", UPLOADS_DIR);
             cb(null, UPLOADS_DIR);
         } catch (err) {
-            console.error("Error creating uploads directory:", err);
-            cb(err);
+            console.error("Failed to create/set up uploads directory:", err.message);
+            cb(new Error(`Directory setup failed: ${err.message}`));
         }
     },
-    filename: (req, file, cb) => {
+    filename: async (req, file, cb) => {
         try {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-            const ext = path.extname(file.originalname).toLowerCase();
-            const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
-            cb(null, filename);
-            console.log("Generated filename:", filename);
+            const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_').toLowerCase();
+            const filePath = path.join(UPLOADS_DIR, sanitizedFilename);
+
+            console.log("Processing file:", file.originalname, "as:", sanitizedFilename);
+            try {
+                await fs.access(filePath);
+                console.log("File exists, reusing:", sanitizedFilename);
+                cb(null, sanitizedFilename);
+            } catch (accessErr) {
+                console.log("File does not exist, saving new:", sanitizedFilename);
+                cb(null, sanitizedFilename);
+            }
         } catch (err) {
-            console.error("Error setting filename:", err);
-            cb(err);
+            console.error("Error processing filename:", err.message);
+            cb(new Error(`Filename processing failed: ${err.message}`));
         }
     }
 });
@@ -126,15 +168,15 @@ const upload = multer({
     limits: { fileSize: 25 * 1024 * 1024 }
 }).array("images", 4);
 
-const optionalUpload = multer({
+const singleUpload = multer({
     storage,
     fileFilter: (req, file, cb) => {
         const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-        const allowedMimetypes = ['image/jpeg', 'image/png'];
+        const allowedMimetypes = ['image/jpeg', 'image/png', 'image/jpg'];
         const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
         const mimetype = allowedMimetypes.includes(file.mimetype);
 
-        console.log('File details (optional upload):', {
+        console.log('File details (single upload):', {
             originalName: file.originalname,
             extname,
             mimetype,
@@ -147,10 +189,37 @@ const optionalUpload = multer({
         }
 
         console.warn('File filter: Invalid file type, skipping upload', { name: file.originalname, type: file.mimetype });
-        cb(null, false);
+        cb(new Error(`Invalid file type: ${file.mimetype}. Allowed types: ${allowedMimetypes.join(", ")}`), false);
     },
     limits: { fileSize: 25 * 1024 * 1024 }
-}).array("images", 4);
+}).single("image");
+
+// Multer for CKEditor uploads (expects 'upload' field)
+const ckeditorUpload = multer({
+    storage,
+    fileFilter: (req, file, cb) => {
+        const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+        const allowedMimetypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedMimetypes.includes(file.mimetype);
+
+        console.log('File details (CKEditor upload):', {
+            originalName: file.originalname,
+            extname,
+            mimetype,
+            mimeValue: file.mimetype
+        });
+
+        if (extname && mimetype) {
+            console.log('File filter: Valid file', { name: file.originalname, type: file.mimetype });
+            return cb(null, true);
+        }
+
+        console.warn('File filter: Invalid file type, skipping upload', { name: file.originalname, type: file.mimetype });
+        cb(new Error(`Invalid file type: ${file.mimetype}. Allowed types: ${allowedMimetypes.join(", ")}`), false);
+    },
+    limits: { fileSize: 25 * 1024 * 1024 }
+}).single('upload');
 
 // JWT verification middleware
 function verifyToken(req, res, next) {
@@ -160,6 +229,10 @@ function verifyToken(req, res, next) {
         return res.status(401).json({ message: "No token provided" });
     }
     const token = authHeader.split(" ")[1];
+    if (!token) {
+        console.log("Token verification: Malformed token header");
+        return res.status(401).json({ message: "Malformed token header" });
+    }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (!decoded.userId) {
@@ -171,7 +244,7 @@ function verifyToken(req, res, next) {
         next();
     } catch (err) {
         console.error("Token verification error:", err.message);
-        return res.status(401).json({ message: "Invalid or expired token" });
+        return res.status(401).json({ message: `Invalid or expired token: ${err.message}` });
     }
 }
 
@@ -208,21 +281,102 @@ async function generateProductCode(type, brand) {
     }
 }
 
+async function generateNewsCode() {
+    const prefix = "N";
+    try {
+        const [rows] = await dbPool.execute(
+            'SELECT id FROM news WHERE id LIKE ?',
+            [`${prefix}%`]
+        );
+        const numbers = rows
+            .map(row => {
+                const numberPart = row.id.replace(prefix, "").trim();
+                const number = parseInt(numberPart, 10);
+                return isNaN(number) || number < 0 ? null : number;
+            })
+            .filter(num => num !== null);
+        const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+        const newNumber = maxNumber + 1;
+        const newCode = `${prefix}${newNumber.toString().padStart(4, "0")}`;
+        const [existing] = await dbPool.execute('SELECT id FROM news WHERE id = ?', [newCode]);
+        if (existing.length > 0) {
+            console.warn("Duplicate news ID detected, regenerating:", newCode);
+            return generateNewsCode();
+        }
+        return newCode;
+    } catch (err) {
+        console.error("Error generating news code:", err);
+        throw err;
+    }
+}
+
 // Login route
 app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
     console.log("Login attempt:", { username });
-    if (
-        username !== process.env.ADMIN_USERNAME ||
-        !(await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH))
-    ) {
-        console.log("Login failed: Invalid credentials");
-        return res.status(401).json({ message: "Invalid username or password" });
+
+    try {
+        const admin1Username = process.env.ADMIN_USERNAME;
+        const admin1PasswordHash = process.env.ADMIN_PASSWORD_HASH;
+        const admin2Username = process.env.ADMIN2_USERNAME;
+        const admin2PasswordHash = process.env.ADMIN2_PASSWORD_HASH;
+
+        let isValid = false;
+        let passwordHashToCheck = null;
+
+        if (username === admin1Username && admin1PasswordHash) {
+            passwordHashToCheck = admin1PasswordHash;
+        } else if (username === admin2Username && admin2PasswordHash) {
+            passwordHashToCheck = admin2PasswordHash;
+        }
+
+        if (passwordHashToCheck && await bcrypt.compare(password, passwordHashToCheck)) {
+            isValid = true;
+        }
+
+        if (!isValid) {
+            console.log("Login failed: Invalid credentials");
+            return res.status(401).json({ message: "Invalid username or password" });
+        }
+
+        const userId = username;
+        const token = jwt.sign({ userId, username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        console.log("Login successful:", { username, userId });
+        res.json({ success: true, token });
+    } catch (err) {
+        console.error("Error during login:", err);
+        res.status(500).json({ message: "Error during login" });
     }
-    const userId = username;
-    const token = jwt.sign({ userId, username }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    console.log("Login successful:", { username, userId });
-    res.json({ success: true, token });
+});
+
+// CKEditor image upload endpoint for news
+app.post('/api/upload-image', verifyToken, ckeditorUpload, async (req, res) => {
+    console.log('Received CKEditor image upload request for news');
+    try {
+        if (!req.file) {
+            console.warn('No file uploaded in CKEditor request');
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const imageUrl = `/backend/uploads/${req.file.filename}`;
+        console.log('Image uploaded successfully:', imageUrl);
+
+        // Set file permissions
+        try {
+            await fs.chmod(path.join(UPLOADS_DIR, req.file.filename), 0o644);
+            console.log('Set permissions for image:', imageUrl);
+        } catch (err) {
+            console.error('Failed to set file permissions:', err.message);
+            await fs.unlink(path.join(UPLOADS_DIR, req.file.filename)).catch(e => console.error('Failed to delete temp file:', e));
+            return res.status(500).json({ error: 'Failed to set file permissions' });
+        }
+
+        // CKEditor expects { url: "<image-url>" }
+        res.json({ url: imageUrl });
+    } catch (err) {
+        console.error('Error uploading image for CKEditor:', err.message, err.stack);
+        res.status(500).json({ error: 'Failed to upload image' });
+    }
 });
 
 // Get all products with filtering
@@ -410,7 +564,7 @@ app.post("/api/products", verifyToken, upload, async (req, res) => {
 });
 
 // Update product
-app.patch("/api/products/:id", verifyToken, optionalUpload, async (req, res) => {
+app.patch("/api/products/:id", verifyToken, upload, async (req, res) => {
     const { id } = req.params;
     const { name, brand, type, material, originalPrice, salePrice, description, version, keepImages, mainImageIndex } = req.body || {};
     console.log("Updating product:", { id, name, brand, type, material, originalPrice, salePrice, description, version, keepImages, mainImageIndex, files: req.files ? req.files.length : 0 });
@@ -487,7 +641,6 @@ app.patch("/api/products/:id", verifyToken, optionalUpload, async (req, res) => 
         try {
             await connection.beginTransaction();
 
-            // Fetch current product
             const [rows] = await connection.execute('SELECT * FROM products WHERE id = ?', [id.trim()]);
             if (rows.length === 0) {
                 return res.status(404).json({ message: `Product with ID ${id} not found` });
@@ -498,7 +651,6 @@ app.patch("/api/products/:id", verifyToken, optionalUpload, async (req, res) => 
                 return res.status(409).json({ message: "Product was modified by another user" });
             }
 
-            // Delete old images if new ones are provided
             if (req.files && req.files.length > 0) {
                 const oldImageUrls = [currentProduct.imageUrl1, currentProduct.imageUrl2, currentProduct.imageUrl3, currentProduct.imageUrl4].filter(url => url);
                 for (const oldImageUrl of oldImageUrls) {
@@ -514,7 +666,6 @@ app.patch("/api/products/:id", verifyToken, optionalUpload, async (req, res) => 
 
             updates.version = (currentProduct.version || 0) + 1;
 
-            // Build update query
             const updateFields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
             const updateValues = Object.values(updates);
             updateValues.push(id.trim());
@@ -524,7 +675,6 @@ app.patch("/api/products/:id", verifyToken, optionalUpload, async (req, res) => 
                 updateValues
             );
 
-            // Fetch updated product
             const [updatedRows] = await connection.execute('SELECT * FROM products WHERE id = ?', [id.trim()]);
             await connection.commit();
             const updatedProduct = {
@@ -555,7 +705,7 @@ app.patch("/api/products/:id", verifyToken, optionalUpload, async (req, res) => 
     }
 });
 
-// DELETE endpoint
+// Delete product
 app.delete("/api/products/:id", verifyToken, async (req, res) => {
     const { id } = req.params;
     console.log("Received DELETE request for product:", { id, type: typeof id });
@@ -565,20 +715,17 @@ app.delete("/api/products/:id", verifyToken, async (req, res) => {
         try {
             await connection.beginTransaction();
 
-            // Fetch product to get imageUrls
             const [rows] = await connection.execute('SELECT imageUrl1, imageUrl2, imageUrl3, imageUrl4 FROM products WHERE id = ?', [id.trim()]);
             if (rows.length === 0) {
                 return res.status(404).json({ message: `Product with ID ${id} not found` });
             }
             const imageUrls = [rows[0].imageUrl1, rows[0].imageUrl2, rows[0].imageUrl3, rows[0].imageUrl4].filter(url => url);
 
-            // Delete product
             const [result] = await connection.execute('DELETE FROM products WHERE id = ?', [id.trim()]);
             if (result.affectedRows === 0) {
                 return res.status(404).json({ message: `Product with ID ${id} not found` });
             }
 
-            // Delete associated images
             for (const imageUrl of imageUrls) {
                 const imagePath = path.join(__dirname, imageUrl);
                 try {
@@ -603,9 +750,294 @@ app.delete("/api/products/:id", verifyToken, async (req, res) => {
     }
 });
 
+app.get("/api/news/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log("Fetching news with ID:", id);
+
+        const [rows] = await dbPool.execute(
+            'SELECT id, title, content, imageUrl, version FROM news WHERE id = ?',
+            [id.trim()]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: `News article with ID ${id} not found` });
+        }
+
+        const news = rows[0];
+        console.log("News fetched successfully:", news);
+        res.json(news);
+    } catch (err) {
+        console.error("Error fetching news:", err);
+        res.status(500).json({ message: "Error fetching news" });
+    }
+});
+
+// Get all news articles
+app.get("/api/news", async (req, res) => {
+    try {
+        const { search } = req.query;
+        console.log("Fetching news with query:", { search });
+
+        let query = 'SELECT id, title, content, imageUrl, version FROM news';
+        const queryParams = [];
+
+        if (search) {
+            query += ' WHERE title LIKE ? OR content LIKE ?';
+            queryParams.push(`%${search}%`, `%${search}%`);
+        }
+
+        const [rows] = await dbPool.execute(query, queryParams);
+        console.log(`Returning ${rows.length} news articles`);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error fetching news:", err);
+        res.status(500).json({ message: "Error fetching news" });
+    }
+});
+
+// Add a new news article
+app.post("/api/news", verifyToken, singleUpload, async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        console.log("Received news data:", {
+            title,
+            content,
+            image: req.file ? req.file.originalname : "No image",
+            mime: req.file ? req.file.mimetype : "No mime"
+        });
+
+        // Input validation
+        if (!title || !content) {
+            console.log("Validation failed: Missing required fields");
+            return res.status(400).json({ message: "Title and content are required" });
+        }
+
+        const normalizedTitle = title.trim();
+        const normalizedContent = content.trim();
+
+        if (!normalizedTitle) {
+            console.log("Validation failed: Title cannot be empty");
+            return res.status(400).json({ message: "News title cannot be empty" });
+        }
+        if (!normalizedContent) {
+            console.log("Validation failed: Content cannot be empty");
+            return res.status(400).json({ message: "News content cannot be empty" });
+        }
+
+        // Handle image
+        let imageUrl = null;
+        if (req.file) {
+            imageUrl = `/backend/uploads/${req.file.filename}`;
+            const filePath = path.join(UPLOADS_DIR, req.file.filename);
+            try {
+                await fs.chmod(filePath, 0o644);
+                console.log("New news image uploaded:", imageUrl);
+            } catch (err) {
+                console.error("Failed to set file permissions:", err.message);
+                await fs.unlink(filePath).catch(e => console.error("Failed to delete temp file:", e));
+                return res.status(500).json({ message: "Failed to set file permissions" });
+            }
+        } else {
+            console.log("No image uploaded, proceeding without image");
+        }
+
+        // Generate news ID and insert into database
+        const connection = await dbPool.getConnection();
+        try {
+            await connection.beginTransaction();
+            console.log("Starting transaction for news");
+            const newId = await generateNewsCode();
+            const newNews = {
+                id: newId,
+                title: normalizedTitle,
+                content: normalizedContent,
+                imageUrl,
+                version: 0
+            };
+
+            await connection.execute(
+                'INSERT INTO news (id, title, content, imageUrl, version) VALUES (?, ?, ?, ?, ?)',
+                [
+                    newNews.id,
+                    newNews.title,
+                    newNews.content,
+                    newNews.imageUrl,
+                    newNews.version
+                ]
+            );
+
+            await connection.commit();
+            console.log("News article added successfully:", newNews);
+            res.status(201).json(newNews);
+        } catch (err) {
+            await connection.rollback();
+            if (req.file) {
+                await fs.unlink(path.join(UPLOADS_DIR, req.file.filename)).catch(e => console.error("Failed to delete temp file:", e));
+            }
+            throw err;
+        } finally {
+            connection.release();
+        }
+    } catch (err) {
+        console.error("Error adding news:", err.message, err.stack);
+        res.status(500).json({ message: err.message || "Error adding news" });
+    }
+});
+
+// Update news article
+app.patch("/api/news/:id", verifyToken, singleUpload, async (req, res) => {
+    const { id } = req.params;
+    const { title, content, version, keepImage } = req.body;
+    console.log("Updating news:", { id, title, content, version, keepImage, file: req.file ? req.file.originalname : "No file" });
+
+    try {
+        const updates = {};
+        if (title !== undefined) {
+            const trimmedTitle = title.trim();
+            if (!trimmedTitle) return res.status(400).json({ message: "Title cannot be empty" });
+            updates.title = trimmedTitle;
+        }
+        if (content !== undefined) {
+            const trimmedContent = content.trim();
+            if (!trimmedContent) return res.status(400).json({ message: "Content cannot be empty" });
+            updates.content = trimmedContent;
+        }
+
+        let imageUrl = null;
+        if (req.file) {
+            imageUrl = `/backend/uploads/${req.file.filename}`;
+            await fs.chmod(path.join(UPLOADS_DIR, req.file.filename), 0o644);
+            console.log("New news image uploaded:", imageUrl);
+            updates.imageUrl = imageUrl;
+        } else if (keepImage !== "true") {
+            updates.imageUrl = null;
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ message: "No valid fields to update" });
+        }
+
+        const connection = await dbPool.getConnection();
+        try {
+            await connection.beginTransaction();
+
+            const [rows] = await connection.execute('SELECT * FROM news WHERE id = ?', [id.trim()]);
+            if (rows.length === 0) {
+                return res.status(404).json({ message: `News article with ID ${id} not found` });
+            }
+            const currentNews = rows[0];
+
+            if (version !== undefined && parseInt(version) !== currentNews.version) {
+                return res.status(409).json({ message: "News article was modified by another user" });
+            }
+
+            if (req.file && currentNews.imageUrl) {
+                const oldImagePath = path.join(__dirname, currentNews.imageUrl);
+                try {
+                    await fs.unlink(oldImagePath);
+                    console.log("Deleted old news image:", oldImagePath);
+                } catch (err) {
+                    console.warn("Failed to delete old news image:", err.message);
+                }
+            }
+
+            updates.version = (currentNews.version || 0) + 1;
+
+            const updateFields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+            const updateValues = Object.values(updates);
+            updateValues.push(id.trim());
+
+            await connection.execute(
+                `UPDATE news SET ${updateFields} WHERE id = ?`,
+                updateValues
+            );
+
+            const [updatedRows] = await connection.execute('SELECT * FROM news WHERE id = ?', [id.trim()]);
+            await connection.commit();
+            console.log("News article updated successfully:", updatedRows[0]);
+            res.json(updatedRows[0]);
+        } catch (err) {
+            await connection.rollback();
+            if (req.file) {
+                await fs.unlink(path.join(UPLOADS_DIR, req.file.filename)).catch(e => console.error("Failed to delete temp file:", e));
+            }
+            throw err;
+        } finally {
+            connection.release();
+        }
+    } catch (err) {
+        console.error("Error updating news:", { id, error: err.message, stack: err.stack });
+        res.status(500).json({ message: err.message || "Error updating news" });
+    }
+});
+
+// Delete news article
+app.delete("/api/news/:id", verifyToken, async (req, res) => {
+    const { id } = req.params;
+    console.log("Received DELETE request for news:", { id, type: typeof id });
+
+    try {
+        const connection = await dbPool.getConnection();
+        try {
+            await connection.beginTransaction();
+
+            const [rows] = await connection.execute('SELECT imageUrl FROM news WHERE id = ?', [id.trim()]);
+            if (rows.length === 0) {
+                return res.status(404).json({ message: `News article with ID ${id} not found` });
+            }
+            const imageUrl = rows[0].imageUrl;
+
+            const [result] = await connection.execute('DELETE FROM news WHERE id = ?', [id.trim()]);
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: `News article with ID ${id} not found` });
+            }
+
+            if (imageUrl) {
+                const imagePath = path.join(__dirname, imageUrl);
+                try {
+                    await fs.unlink(imagePath);
+                    console.log("Deleted news image:", imagePath);
+                } catch (err) {
+                    console.warn("Failed to delete news image:", err.message);
+                }
+            }
+
+            await connection.commit();
+            res.json({ message: "News article deleted successfully" });
+        } catch (err) {
+            await connection.rollback();
+            throw err;
+        } finally {
+            connection.release();
+        }
+    } catch (err) {
+        console.error("Error deleting news:", { id, error: err.message, stack: err.stack });
+        res.status(500).json({ message: "Error deleting news article", error: err.message });
+    }
+});
+
+// Verify token endpoint
+app.get('/api/verify-token', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    console.log(`Verify token request, token: ${token ? token.substring(0, 10) + '...' : 'No token'}`);
+    if (!token) {
+        return res.status(401).json({ valid: false, error: 'No token provided' });
+    }
+    try {
+        jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Token verified successfully');
+        res.json({ valid: true });
+    } catch (err) {
+        console.error('Token verification failed:', err.message);
+        res.status(401).json({ valid: false, error: `Invalid token: ${err.message}` });
+    }
+});
+
 // Start server
 app.listen(PORT, async () => {
     try {
+        console.log("Initializing uploads directory:", UPLOADS_DIR);
         await fs.mkdir(UPLOADS_DIR, { recursive: true });
         await fs.chmod(UPLOADS_DIR, 0o755);
         await initializeDatabase();

@@ -5,12 +5,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="product-page.css">
-    <title>Trang trang sức</title>
+    <title>Trang sản phẩm - Giang Kim Hoàn Jewellry</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
     <div id="cart-announcement" class="cart-announcement"> <img src="img/i.png" alt=""> Your shopping bag is empty</div>
+    <!-- Single Sidebar -->
+    <div id="xai-sidebar" class="xai-sidebar">
+        <div class="xai-close-btn" id="xai-sidebar-close">
+            <div><img src="img/close.png" alt=""></div>
+        </div>
+        <!-- Main Menu Content -->
+        <div id="xai-main-content" class="xai-content xai-content-visible">
+            <div class="xai-menu-item-container" data-title="TRANG SỨC">
+                <div class="xai-menu-item">TRANG SỨC</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="DỊCH VỤ">
+                <div class="xai-menu-item">DỊCH VỤ</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="QUÝ TRÌNH SẢN XUẤT">
+                <div class="xai-menu-item">QUÝ TRÌNH SẢN XUẤT</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="ƯU ĐÃI">
+                <div class="xai-menu-item">ƯU ĐÃI</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="VỀ CHÚNG TÔI">
+                <div class="xai-menu-item">VỀ CHÚNG TÔI</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="TIN TỨC">
+                <div class="xai-menu-item">TIN TỨC</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="LOGIN">
+                <div class="xai-menu-item">LOGIN</div>
+                <span>></span>
+            </div>
+        </div>
+        <!-- First-Level Submenu Content -->
+        <div id="xai-submenu-content" class="xai-content xai-content-hidden">
+            <div class="flex items-center">
+                <div class="xai-back-btn" id="xai-back-button">
+                    <img src="img/back-img.png" alt="">
+                    <span>Back</span>
+                </div>
+                <div id="xai-submenu-title" class="text-lg font-bold"></div>
+            </div>
+            <div id="xai-submenu-list"></div>
+        </div>
+        <!-- Second-Level Submenu Content -->
+        <div id="xai-sub-submenu-content" class="xai-content xai-content-hidden">
+            <div class="flex items-center">
+                <div class="xai-back-btn" id="xai-sub-submenu-back-button">
+                    <img src="img/back-img.png" alt="">
+                    <span>Back</span>
+                </div>
+                <div id="xai-sub-submenu-title" class="text-lg font-bold"></div>
+            </div>
+            <div id="xai-sub-submenu-list"></div>
+        </div>
+        <div class="contact-info">
+            <span>Chúng tôi có thể giúp gì cho bạn?</span>
+            <span>+84 88843434</span>
+        </div>
+    </div>
+    <!-- Modal overlay -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ADDED TO SHOPPING BAG</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Product items will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="checkout-btn" onclick="checkout()">THANH TOÁN</button>
+                <button class="zalo-btn" onclick="contactZalo()">LIÊN HỆ TRỰC TIẾP ZALO</button>
+            </div>
+        </div>
+    </div>
     <header class="nav-bar">
         <a href="index.html" class="brand-link">
             <div class="brand">GIANG KIM HOAN</div>
@@ -25,86 +104,8 @@
             <li class="menu xai-sidebar-toggle" id="xai-sidebar-toggle">
                 <img src="img/hamburger-menu.png" alt="Menu" aria-label="Menu" class="icon">
             </li>
-            <!-- Single Sidebar -->
-            <div id="xai-sidebar" class="xai-sidebar">
-                <div class="xai-close-btn" id="xai-sidebar-close">
-                    <div><img src="img/close.png" alt=""></div>
-                </div>
-                <!-- Main Menu Content -->
-                <div id="xai-main-content" class="xai-content xai-content-visible">
-                    <div class="xai-menu-item-container" data-title="TRANG SỨC">
-                        <div class="xai-menu-item">TRANG SỨC</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="DỊCH VỤ">
-                        <div class="xai-menu-item">DỊCH VỤ</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="QUÝ TRÌNH SẢN XUẤT">
-                        <div class="xai-menu-item">QUÝ TRÌNH SẢN XUẤT</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="ƯU ĐÃI">
-                        <div class="xai-menu-item">ƯU ĐÃI</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="VỀ CHÚNG TÔI">
-                        <div class="xai-menu-item">VỀ CHÚNG TÔI</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="TIN TỨC">
-                        <div class="xai-menu-item">TIN TỨC</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="LOGIN">
-                        <div class="xai-menu-item">LOGIN</div>
-                        <span>></span>
-                    </div>
-                </div>
-                <!-- First-Level Submenu Content -->
-                <div id="xai-submenu-content" class="xai-content xai-content-hidden">
-                    <div class="flex items-center">
-                        <div class="xai-back-btn" id="xai-back-button">
-                            <div></div>
-                            <span>Back</span>
-                        </div>
-                        <div id="xai-submenu-title" class="text-lg font-bold"></div>
-                    </div>
-                    <div id="xai-submenu-list"></div>
-                </div>
-                <!-- Second-Level Submenu Content -->
-                <div id="xai-sub-submenu-content" class="xai-content xai-content-hidden">
-                    <div class="flex items-center">
-                        <div class="xai-back-btn" id="xai-sub-submenu-back-button">
-                            <div></div>
-                            <span>Back</span>
-                        </div>
-                        <div id="xai-sub-submenu-title" class="text-lg font-bold"></div>
-                    </div>
-                    <div id="xai-sub-submenu-list"></div>
-                </div>
-                <div class="contact-info">
-                    <span>Chúng tôi nếu giá đã chọn?</span>
-                    <span>+84 88843434</span>
-                </div>
-            </div>
-            <!-- Modal overlay -->
-            <div class="modal-overlay" id="cartModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>ADDED TO SHOPPING BAG</h2>
-                        <button class="close-btn" onclick="closeModal()">×</button>
-                    </div>
-                    <div class="modal-body" id="modal-body">
-                        <!-- Product items will be dynamically inserted here -->
-                    </div>
-                    <div class="modal-footer">
-                        <button class="checkout-btn" onclick="checkout()">THANH TOÁN</button>
-                        <button class="zalo-btn" onclick="contactZalo()">LIÊN HỆ TRỰC TIẾP ZALO</button>
-                    </div>
-                </div>
-            </div>
         </div>
+
         <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." aria-label="Nhập để tìm kiếm sản phẩm">
         <div id="searchResults" class="search-results"></div>
     </header>
@@ -113,58 +114,57 @@
         <img src="img/53.png" alt="">
     </section>
 
-<nav class="custom-nav" id="custom-nav">
-    <div class="nav-content">
-        <div class="breadcrumb">
+    <nav class="custom-nav" id="custom-nav">
+        <div class="nav-content">
+            <div class="breadcrumb"></div>
+            <ul class="menu-items bg-gray-100">
+                <li class="toggle-wrapper">
+                    <a href="#" class="toggle-submenu one" aria-expanded="false" aria-controls="category-submenu">
+                        <span class="label">
+                            <strong>DANH MỤC</strong>
+                            <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                        </span>
+                    </a>
+                    <ul class="submenu bg-gray-200" id="category-submenu">
+                        <li><a href="#">Trang sức cưới</a></li>
+                        <li><a href="#">Trang sức thời trang</a></li>
+                        <li><a href="#">Trang sức cao cấp</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="toggle-submenu" aria-expanded="false" aria-controls="filter-submenu">
+                        <span class="label">
+                            <strong>Bộ lọc</strong>
+                            <img src="img/down.png" alt="Mở bộ lọc" class="arrow w-3 h-3">
+                        </span>
+                    </a>
+                    <ul class="submenu bg-gray-200" id="filter-submenu">
+                        <li class="filter-parent" data-filter-type="price">
+                            <span class="filter-label"><strong>Lọc theo giá</strong></span>
+                        </li>
+                        <li class="filter-parent" data-filter-type="type">
+                            <span class="filter-label"><strong>Lọc theo loại</strong></span>
+                        </li>
+                        <li id="reset-filters">Xóa bộ lọc</li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="toggle-submenu" aria-expanded="false" aria-controls="sort-submenu">
+                        <span class="small-text">Sắp xếp theo:</span>
+                        <span class="label">
+                            <strong>Mới nhất</strong>
+                            <img src="img/down.png" alt="Mở sắp xếp" class="arrow w-3 h-3">
+                        </span>
+                    </a>
+                    <ul class="submenu bg-gray-200" id="sort-submenu">
+                        <li data-sort="newest">Mới nhất</li>
+                        <li data-sort="oldest">Cũ nhất</li>
+                        <li data-sort="popular">Phổ biến</li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-        <ul class="menu-items bg-gray-100">
-            <li>
-                <a href="#" class="toggle-submenu" aria-expanded="false" aria-controls="category-submenu">
-                    <span class="label">
-                        <strong>DANH MỤC</strong>
-                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
-                    </span>
-                </a>
-                <ul class="submenu bg-gray-200" id="category-submenu">
-                    <li><a href="#">Trang sức cưới</a></li>
-                    <li><a href="#">Trang sức thời trang</a></li>
-                    <li><a href="#">Trang sức cao cấp</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#" class="toggle-submenu" aria-expanded="false" aria-controls="filter-submenu">
-                    <span class="label">
-                        <strong>BỘ LỌC</strong>
-                        <img src="img/down.png" alt="Mở bộ lọc" class="arrow w-3 h-3">
-                    </span>
-                </a>
-                <ul class="submenu bg-gray-200" id="filter-submenu">
-                    <li class="filter-parent" data-filter-type="price">
-                        <span class="filter-label"><strong>LỌC THEO GIÁ</strong></span>
-                    </li>
-                    <li class="filter-parent" data-filter-type="type">
-                        <span class="filter-label"><strong>LỌC THEO LOẠI</strong></span>
-                    </li>
-                    <li id="reset-filters">Xóa bộ lọc</li>
-                </ul>
-            </li>
-            <li>
-                <a href="#" class="toggle-submenu" aria-expanded="false" aria-controls="sort-submenu">
-                    <span class="small-text">Sắp xếp theo:</span>
-                    <span class="label">
-                        <strong>MỚI NHẤT</strong>
-                        <img src="img/down.png" alt="Mở sắp xếp" class="arrow w-3 h-3">
-                    </span>
-                </a>
-                <ul class="submenu bg-gray-200" id="sort-submenu">
-                    <li data-sort="newest">Mới nhất</li>
-                    <li data-sort="oldest">Cũ nhất</li>
-                    <li data-sort="popular">Phổ biến</li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-</nav>
+    </nav>
 
     <h2 id="product-heading">All Products</h2>
 
@@ -180,7 +180,10 @@
         <div class="footer">
             <div class="footer-container first">
                 <div class="column help">
-                    <h3>Chúng tôi có thể giúp gì cho bạn</h3>
+                    <div class="column-wrapper">
+                        <h3>Chúng tôi có thể giúp gì cho bạn</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="product-page.html">Giới thiệu</a></li>
@@ -191,7 +194,10 @@
                     </div>
                 </div>
                 <div class="column service">
-                    <h3>Về chúng tôi</h3>
+                    <div class="column-wrapper">
+                        <h3>Về chúng tôi</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="ve-giang-kim-hoan.html">Về Giang Kim Hoàn</a></li>
@@ -199,7 +205,10 @@
                     </div>
                 </div>
                 <div class="column notification">
-                    <h3>Đăng ký nhận email</h3>
+                    <div class="column-wrapper">
+                        <h3>Đăng ký nhận email</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li>Đăng ký nhận thông tin về sản phẩm và ưu đãi mới nhất từ GKH</li>
@@ -212,7 +221,10 @@
             </div>
             <div class="footer-container second">
                 <div class="column help">
-                    <h3>Dịch vụ của Giang Kim Hoan</h3>
+                    <div class="column-wrapper">
+                        <h3>Dịch vụ của Giang Kim Hoan</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="custom-trang-suc.html">Custom trang sức</a></li>
@@ -222,7 +234,10 @@
                     </div>
                 </div>
                 <div class="column notification">
-                    <h3>Tin tức</h3>
+                    <div class="column-wrapper">
+                        <h3>Tin tức</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="news-page.html">Tin tức trang sức</a></li>

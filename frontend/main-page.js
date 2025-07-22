@@ -1,4 +1,5 @@
 const API_BASE_URL = "https://api.giangkimhoan.com";
+const ITEMS_PER_PAGE = 12;
 
 // Cart storage
 let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -8,7 +9,11 @@ const AVAILABLE_MATERIALS = ["Vàng 10k", "Vàng 18k", "Bạc", "Bạch kim"];
 
 // Format number with dots for VND (e.g., 1200000 -> 1.200.000)
 function formatVND(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // Convert to number and remove decimal places if it's a whole number
+    const num = Number(number);
+    const isWholeNumber = Number.isInteger(num);
+    const formattedNumber = isWholeNumber ? num.toString() : num.toFixed(2);
+    return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 // Case-insensitive mapping for brand and type
@@ -17,7 +22,9 @@ const brandMap = {
     "cartier": "Cartier",
     "bvlgari": "Bvlgari",
     "van cleef & arpels": "Van Cleef & Arpels",
-    "chrome hearts": "Chrome Hearts"
+    "chrome hearts": "Chrome Hearts",
+    "gucci": "Gucci",
+    "louis vuiton": "Louis Vuiton"
 };
 
 const typeMap = {
@@ -415,6 +422,24 @@ function initializeSidebar() {
                     { text: "MẶT DÂY", href: "#" },
                     { text: "KHUYÊN TAI", href: "#" }
                 ]
+            },
+            {
+                text: "LOUIS VUITON", href: "#", subItems: [
+                    { text: "NHẪN", href: "#" },
+                    { text: "VÒNG TAY", href: "#" },
+                    { text: "DÂY CHUYỀN", href: "#" },
+                    { text: "MẶT DÂY", href: "#" },
+                    { text: "KHUYÊN TAI", href: "#" }
+                ]
+            },
+            {
+                text: "CHANEL", href: "#", subItems: [
+                    { text: "NHẪN", href: "#" },
+                    { text: "VÒNG TAY", href: "#" },
+                    { text: "DÂY CHUYỀN", href: "#" },
+                    { text: "MẶT DÂY", href: "#" },
+                    { text: "KHUYÊN TAI", href: "#" }
+                ]
             }
         ]
     };
@@ -515,8 +540,8 @@ function initializeSidebar() {
                     "DỊCH VỤ": "#dich-vu",
                     "QUÝ TRÌNH SẢN XUẤT": "#quy-trinh-san-xuat",
                     "ƯU ĐÃI": "#uu-dai",
-                    "VỀ CHÚNG TÔI": "news-page.html",
-                    "TIN TỨC": "#tin-tuc",
+                    "VỀ CHÚNG TÔI": "#ve-chung-toi",
+                    "TIN TỨC": "news-page.html",
                     "LOGIN": "admin.html"
                 };
                 window.location.href = urlMap[title] || `#${title.toLowerCase().replace(/\s/g, '-')}`;
@@ -624,11 +649,26 @@ function initializeServicesScroll() {
 
 // Initialize column toggle
 function initializeColumnToggle() {
-    document.querySelectorAll('.column h3').forEach(h3 => {
-        h3.addEventListener('click', function () {
+    const wrappers = document.querySelectorAll('.column .column-wrapper');
+    wrappers.forEach(wrapper => {
+        wrapper.addEventListener('click', function () {
             const contentWrapper = this.nextElementSibling;
+            const arrow = this.querySelector('.arrow');
+
             if (contentWrapper && contentWrapper.classList.contains('content-wrapper')) {
-                contentWrapper.classList.toggle('show');
+                // Close other sections
+                document.querySelectorAll('.column .content-wrapper.show').forEach(other => {
+                    if (other !== contentWrapper) {
+                        other.classList.remove('show');
+                        other.style.maxHeight = '0';
+                        const otherArrow = other.previousElementSibling.querySelector('.arrow');
+                        if (otherArrow) otherArrow.classList.remove('show');
+                    }
+                });
+
+                const isOpen = contentWrapper.classList.toggle('show');
+                contentWrapper.style.maxHeight = isOpen ? `${contentWrapper.scrollHeight}px` : '0';
+                if (arrow) arrow.classList.toggle('show', isOpen);
             }
         });
     });
@@ -752,7 +792,6 @@ function displayCartItems() {
                     </select>
                 </div>
             </div>
-            <button class="remove-item" data-index="${index}" style="margin-left: auto; background: none; border: none; color: red; cursor: pointer;">✕</button>
         `;
         modalBody.appendChild(itemElement);
     });
@@ -1097,6 +1136,242 @@ function setupFormSubmission() {
     });
 }
 
+async function fetchNews() {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const url = `${API_BASE_URL}/api/news`;
+            console.log(`Fetching news (Attempt ${attempt}) from ${url}`);
+            const response = await fetch(url, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+                mode: "cors",
+                cache: "no-cache"
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+            }
+            const result = await response.json();
+            console.log(`Fetched news:`, result);
+            return Array.isArray(result) ? result : result.data || [];
+        } catch (error) {
+            console.error(`Fetch attempt ${attempt} failed:`, error);
+            if (attempt === MAX_RETRIES) {
+                return { error: `Error loading news: ${error.message}. Check if backend is running at ${API_BASE_URL}.` };
+            }
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        }
+    }
+}
+
+async function fetchNewsById(newsId) {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const url = `${API_BASE_URL}/api/news/${encodeURIComponent(newsId)}`;
+            console.log(`Fetching news item (Attempt ${attempt}) from ${url}`);
+            const response = await fetch(url, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+                mode: "cors",
+                cache: "no-cache"
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+            }
+            const newsItem = await response.json();
+            console.log(`Fetched news item with ID ${newsId}:`, newsItem);
+            return newsItem;
+        } catch (error) {
+            console.error(`Fetch attempt ${attempt} for news ID ${newsId} failed:`, error);
+            if (attempt === MAX_RETRIES) {
+                return { error: `Error loading news item: ${error.message}. Check if backend is running at ${API_BASE_URL}.` };
+            }
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        }
+    }
+}
+
+function renderNews(news, containerId, startIndex = 0, limit = Infinity) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container ${containerId} not found`);
+        return;
+    }
+
+    container.innerHTML = '';
+
+    if (news.error || !Array.isArray(news)) {
+        console.error("News fetch error or invalid data:", news.error || "Not an array");
+        container.innerHTML = `<p class="text-red-600 text-center">Unable to load news. Please try again later.</p>`;
+        return;
+    }
+
+    const newsToDisplay = news.slice(startIndex, startIndex + limit);
+    console.log(`Rendering ${newsToDisplay.length} news items for container ${containerId} from index ${startIndex}`);
+
+    if (newsToDisplay.length === 0) {
+        container.innerHTML = `<p class="text-gray-600 text-center">No news available.</p>`;
+        return;
+    }
+
+    newsToDisplay.forEach(item => {
+        if (!item.id || !item.title) {
+            console.warn("Skipping invalid news item:", item);
+            return;
+        }
+
+        const newsItem = document.createElement("div");
+        newsItem.className = "news-item";
+        const imageUrl = item.imageUrl
+            ? `${API_BASE_URL}${item.imageUrl.startsWith('/') ? '' : '/'}${item.imageUrl}`
+            : `${API_BASE_URL}/img/placeholder.png`;
+        newsItem.innerHTML = `
+            <img src="${imageUrl}" alt="${item.title || 'News Image'}" onerror="this.src='${API_BASE_URL}/img/placeholder.png'; console.error('Image failed to load:', '${imageUrl}')">
+            <div class="news-content">
+                <h3>${item.title || 'Untitled'}</h3>
+                <p>${item.content ? item.content.substring(0, 50) + (item.content.length > 50 ? "..." : "") : 'No content available'}</p>
+                <a href="news-details.html?newsId=${encodeURIComponent(item.id)}" class="read-more" data-news-id="${item.id}">Đọc thêm</a>
+            </div>
+        `;
+        container.appendChild(newsItem);
+    });
+
+    const readMoreLinks = container.querySelectorAll('.read-more');
+    console.log(`Found ${readMoreLinks.length} read-more links`);
+    readMoreLinks.forEach(link => {
+        console.log('Attaching event listener to read-more link with newsId:', link.getAttribute('data-news-id'));
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const newsId = link.getAttribute('data-news-id');
+            console.log('Read more clicked for newsId:', newsId);
+            window.location.href = `news-details.html?newsId=${encodeURIComponent(newsId)}`;
+        });
+    });
+}
+
+async function setupPagination() {
+    // Fetch all news items (use a large limit to get all items)
+    const allNews = await fetchNews(1, 1000);
+    if (allNews.error || !Array.isArray(allNews)) {
+        renderNews(allNews, 'newsGrid');
+        return;
+    }
+
+    const totalItems = allNews.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    console.log(`Total items: ${totalItems}, Total pages: ${totalPages}`);
+
+    // Render first page
+    renderNews(allNews, 'newsGrid', 0, ITEMS_PER_PAGE);
+
+    // Handle pagination
+    const paginationContainer = document.getElementById('pagination');
+    if (!paginationContainer) {
+        console.error('Pagination container not found');
+        return;
+    }
+    paginationContainer.innerHTML = ''; // Clear pagination
+
+    // If 12 or fewer items, hide pagination
+    if (totalItems <= ITEMS_PER_PAGE) {
+        console.log('12 or fewer items, hiding pagination');
+        return;
+    }
+
+    // Create pagination buttons
+    for (let page = 1; page <= totalPages; page++) {
+        const button = document.createElement('button');
+        button.className = `page-btn${page === 1 ? ' active' : ''}`;
+        button.textContent = page;
+        button.onclick = () => showPage(page, allNews);
+        paginationContainer.appendChild(button);
+    }
+}
+
+async function loadPage(page, allNews) {
+    const startIndex = (page - 1) * ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, allNews.length);
+    console.log(`Loading page ${page}: items ${startIndex + 1} to ${endIndex}`);
+    renderNews(allNews, 'newsGrid', startIndex, ITEMS_PER_PAGE);
+}
+
+function showPage(pageNum, allNews) {
+    console.log(`Showing page ${pageNum}`);
+    loadPage(pageNum, allNews);
+
+    // Update active button
+    document.querySelectorAll('.page-btn').forEach(btn => btn.classList.remove('active'));
+    const activeButton = Array.from(document.querySelectorAll('.page-btn')).find(
+        btn => btn.textContent === pageNum.toString()
+    );
+    if (activeButton) {
+        activeButton.classList.add('active');
+    } else {
+        console.warn(`Page button for page ${pageNum} not found`);
+    }
+}
+
+async function showNewsDetails(newsId) {
+    const newsGrid = document.getElementById('newsGrid');
+    const newsDetail = document.getElementById('news-detail');
+    const newsContent = document.getElementById('news-content');
+
+    if (!newsGrid || !newsDetail || !newsContent) {
+        console.error('Required DOM elements not found for news details');
+        return;
+    }
+
+    // Fetch the news item
+    const newsItem = await fetchNewsById(newsId);
+    console.log('Fetched news item for details:', newsItem);
+
+    if (newsItem.error || !newsItem) {
+        console.error('Failed to fetch news item:', newsItem.error || 'No news data');
+        newsContent.innerHTML = `<p class="text-red-600 text-center">Error loading news article</p>`;
+        newsDetail.classList.remove('hidden');
+        newsGrid.classList.add('hidden');
+        return;
+    }
+
+    if (!newsItem.content) {
+        console.error('Invalid news item data:', newsItem);
+        newsContent.innerHTML = `<p class="text-red-600 text-center">No content available</p>`;
+        newsDetail.classList.remove('hidden');
+        newsGrid.classList.add('hidden');
+        return;
+    }
+
+    // Display only the content
+    newsContent.innerHTML = newsItem.content || 'No content available';
+    newsDetail.classList.remove('hidden');
+    newsGrid.classList.add('hidden');
+
+    // Scroll to the top of the news detail section
+    document.querySelector('.news-title').scrollIntoView({ behavior: 'smooth' });
+}
+
+function setupBackButton() {
+    const backButton = document.getElementById('back-to-news');
+    const newsGrid = document.getElementById('newsGrid');
+    const newsDetail = document.getElementById('news-detail');
+
+    if (!backButton || !newsGrid || !newsDetail) {
+        console.warn('Back button or related elements not found');
+        return;
+    }
+
+    backButton.addEventListener('click', () => {
+        newsDetail.classList.add('hidden');
+        newsGrid.classList.remove('hidden');
+        document.querySelector('.news-title').scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
 // Fetch products with retry logic
 async function fetchProducts(productId = null) {
     const MAX_RETRIES = 3;
@@ -1200,8 +1475,10 @@ function renderProducts(products, containerId, startIndex = 0, limit = Infinity)
     let filteredProducts = [...products];
     if (brand && brand !== "all") {
         filteredProducts = filteredProducts.filter(product =>
-            product.brand && product.brand.toLowerCase() === brand ||
-            brandMap[product.brand.toLowerCase()]?.toLowerCase() === brand
+            product.brand && (
+                product.brand.toLowerCase() === brand ||
+                brandMap[product.brand.toLowerCase()]?.toLowerCase() === brand
+            )
         );
     }
     if (type && type !== "all") {
@@ -1215,41 +1492,145 @@ function renderProducts(products, containerId, startIndex = 0, limit = Infinity)
         return;
     }
 
-    displayedProducts.forEach(product => {
-        const productData = {
-            id: product.id || ``,
-            name: product.name || "Unnamed Product",
-            brand: product.brand || "Unknown Brand",
-            salePrice: product.salePrice != null ? Number(product.salePrice) : 0,
-            originalPrice: product.originalPrice != null ? Number(product.originalPrice) : 0,
-            imageUrls: product.imageUrls || [],
-            mainImageIndex: product.mainImageIndex != null ? Number(product.mainImageIndex) : 0,
-            type: product.type || "Unknown Type",
-            material: product.material || "Unknown Material"
-        };
+    // Handle suggestion section
+    if (containerId === 'suggestion') {
+        // Create carousel structure
+        const carouselWrapper = document.createElement('div');
+        carouselWrapper.className = 'suggestion-carousel';
 
-        let imageUrl = productData.imageUrls[productData.mainImageIndex] || productData.imageUrls[0] || "/backend/uploads/default-image.jpg";
-        imageUrl = imageUrl.startsWith('http')
-            ? imageUrl
-            : `${API_BASE_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-        console.log(`Image URL for product "${productData.name}" (ID: ${productData.id}):`, imageUrl);
+        const productContainer = document.createElement('div');
+        productContainer.className = 'suggestion-products';
 
-        const productElement = document.createElement("a");
-        productElement.href = `product-details.html?id=${encodeURIComponent(productData.id)}&brand=${encodeURIComponent(productData.brand)}&name=${encodeURIComponent(productData.name)}&salePrice=${productData.salePrice}&originalPrice=${productData.originalPrice}&imageUrl=${encodeURIComponent(imageUrl)}`;
-        productElement.className = "product-link";
-        productElement.innerHTML = `
-            <div class="new-arrivals-item">
-                <img src="${imageUrl}" alt="${productData.name}" class="brand-item" loading="lazy" onerror="this.src='${API_BASE_URL}/backend/uploads/default-image.jpg'; console.error('Image failed to load:', '${imageUrl}')">
-                <span class="brand">${productData.brand}</span>
-                <span class="item">${productData.name}</span>
-                <div class="price">
-                    ${productData.salePrice > 0 ? `<span class="sale-price">${formatVND(productData.salePrice)} VND</span>` : ''}
-                    <span class="original-price">${productData.originalPrice > 0 ? formatVND(productData.originalPrice) : 'N/A'} VND</span>
+        // Append products
+        displayedProducts.forEach((product, index) => {
+            const productData = {
+                id: product.id || `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                name: product.name || "Unknown Product",
+                brand: product.brand || "Unknown Brand",
+                salePrice: product.salePrice != null ? Number(product.salePrice) : 0,
+                originalPrice: product.originalPrice != null ? Number(product.originalPrice) : 0,
+                imageUrls: product.imageUrls || [],
+                mainImageIndex: product.mainImageIndex != null ? Number(product.mainImageIndex) : 0,
+                type: product.type || "Unknown Type",
+                material: product.material || "Unknown Material"
+            };
+
+            let imageUrl = productData.imageUrls[productData.mainImageIndex] || productData.imageUrls[0] || "/backend/uploads/image-placeholder.jpg";
+            imageUrl = imageUrl.startsWith('http')
+                ? imageUrl
+                : `${API_BASE_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+            console.log(`Image URL for product "${productData.name}" (ID: ${productData.id}):`, imageUrl);
+
+            const productElement = document.createElement("a");
+            productElement.href = `product-details.html?id=${encodeURIComponent(productData.id)}&brand=${encodeURIComponent(productData.brand)}&name=${encodeURIComponent(productData.name)}&salePrice=${productData.salePrice}&originalPrice=${productData.originalPrice}&imageUrl=${encodeURIComponent(imageUrl)}`;
+            productElement.className = "product-link slide-in-bottom";
+            productElement.style.setProperty('--animation-delay', `${index * 0.1}s`);
+            productElement.innerHTML = `
+                <div class="new-arrivals-item">
+                    <img src="${imageUrl}" alt="${productData.name}" class="brand-item" loading="lazy" onerror="this.src='${API_BASE_URL}/backend/uploads/image-placeholder.jpg'; console.error('Image failed to load:', '${imageUrl}')">
+                    <span class="brand">${brandMap[productData.brand.toLowerCase()] || productData.brand}</span>
+                    <span class="item">${productData.name}</span>
+                    <div class="price">
+                        ${productData.salePrice > 0 ? `<span class="sale-price">${formatVND(productData.salePrice)} VND</span>` : ''}
+                        <span class="original-price">${productData.originalPrice > 0 ? formatVND(productData.originalPrice) : 'N/A'} VND</span>
+                    </div>
                 </div>
-            </div>
-        `;
-        container.appendChild(productElement);
+            `;
+            productContainer.appendChild(productElement);
+        });
+
+        // Add chevron buttons
+        const leftChevron = document.createElement('div');
+        leftChevron.className = 'icon-container left-chevron';
+        leftChevron.innerHTML = '<i class="fas fa-chevron-left"></i>';
+
+        const rightChevron = document.createElement('div');
+        rightChevron.className = 'icon-container right-chevron';
+        rightChevron.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+        // Append elements to carousel wrapper
+        carouselWrapper.appendChild(leftChevron);
+        carouselWrapper.appendChild(productContainer);
+        carouselWrapper.appendChild(rightChevron);
+        container.appendChild(carouselWrapper);
+
+        // Navigation logic (adapted from Box Carousel)
+        leftChevron.addEventListener('click', () => {
+            productContainer.scrollBy({ left: -270, behavior: 'smooth' }); // Product width (250px) + gap (20px)
+        });
+
+        rightChevron.addEventListener('click', () => {
+            productContainer.scrollBy({ left: 270, behavior: 'smooth' });
+        });
+    } else {
+        // Regular product rendering for other sections
+        displayedProducts.forEach((product, index) => {
+            const productData = {
+                id: product.id || `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                name: product.name || "Unknown Product",
+                brand: product.brand || "Unknown Brand",
+                salePrice: product.salePrice != null ? Number(product.salePrice) : 0,
+                originalPrice: product.originalPrice != null ? Number(product.originalPrice) : 0,
+                imageUrls: product.imageUrls || [],
+                mainImageIndex: product.mainImageIndex != null ? Number(product.mainImageIndex) : 0,
+                type: product.type || "Unknown Type",
+                material: product.material || "Unknown Material"
+            };
+
+            let imageUrl = productData.imageUrls[productData.mainImageIndex] || productData.imageUrls[0] || "/backend/uploads/image-placeholder.jpg";
+            imageUrl = imageUrl.startsWith('http')
+                ? imageUrl
+                : `${API_BASE_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+            console.log(`Image URL for product "${productData.name}" (ID: ${productData.id}):`, imageUrl);
+
+            const productElement = document.createElement("a");
+            productElement.href = `product-details.html?id=${encodeURIComponent(productData.id)}&brand=${encodeURIComponent(productData.brand)}&name=${encodeURIComponent(productData.name)}&salePrice=${productData.salePrice}&originalPrice=${productData.originalPrice}&imageUrl=${encodeURIComponent(imageUrl)}`;
+            productElement.className = "product-link slide-in-bottom";
+            productElement.style.setProperty('--animation-delay', `${index * 0.1}s`);
+            productElement.innerHTML = `
+                <div class="new-arrivals-item">
+                    <img src="${imageUrl}" alt="${productData.name}" class="brand-item" loading="lazy" onerror="this.src='${API_BASE_URL}/backend/uploads/image-placeholder.jpg'; console.error('Image failed to load:', '${imageUrl}')">
+                    <span class="brand">${brandMap[productData.brand.toLowerCase()] || productData.brand}</span>
+                    <span class="item">${productData.name}</span>
+                    <div class="price">
+                        ${productData.salePrice > 0 ? `<span class="sale-price">${formatVND(productData.salePrice)} VND</span>` : ''}
+                        <span class="original-price">${productData.originalPrice > 0 ? formatVND(productData.originalPrice) : 'N/A'} VND</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(productElement);
+        });
+    }
+
+    // Set up Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    container.querySelectorAll('.product-link').forEach(link => {
+        observer.observe(link);
     });
+
+    // Inject CSS for slide-in animation
+    const style = document.createElement('style');
+    style.textContent = `
+        .slide-in-bottom {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            transition-delay: var(--animation-delay, 0s);
+        }
+        .slide-in-bottom.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // Render product details
@@ -1513,8 +1894,11 @@ function renderBreadcrumb() {
     const params = new URLSearchParams(window.location.search);
     const brand = params.get('brand') ? decodeURIComponent(params.get('brand')).toLowerCase() : null;
     const category = params.get('category') ? decodeURIComponent(params.get('category')).toLowerCase() : null;
+    const type = params.get('type') ? decodeURIComponent(params.get('type')).toLowerCase() : null;
 
-    let breadcrumbText = '<a href="index.html">Trang chủ</a> / ';
+    console.log("Updating breadcrumb - Brand:", brand, "Category:", category, "Type:", type);
+
+    let breadcrumbText = '<a href="index.html">Homepage</a> / ';
     let href = 'product-page.html';
     let displayText = 'Sản phẩm';
 
@@ -1522,13 +1906,26 @@ function renderBreadcrumb() {
         // Use the title-cased brand name from brandMap for the URL and display
         const brandDisplay = brandMap[brand] || brand.charAt(0).toUpperCase() + brand.slice(1);
         href += `?brand=${encodeURIComponent(brandMap[brand] || brandDisplay)}`;
-        displayText = brandDisplay;
+
+        if (type && type !== 'all') {
+            // When both brand and type are present, make brand and type clickable
+            const typeDisplay = typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1);
+            const typeHref = `product-page.html?brand=${encodeURIComponent(brandMap[brand] || brandDisplay)}&type=${encodeURIComponent(typeMap[type] || typeDisplay)}`;
+            breadcrumbText += `<a href="${href}">${brandDisplay}</a> / <a href="${typeHref}">${typeDisplay}</a>`;
+        } else {
+            // Only brand is present, make it clickable to the current brand page
+            breadcrumbText += `<a href="${href}">${brandDisplay}</a>`;
+        }
     } else if (category) {
+        // Handle category case, make it clickable to the category page
         href += `?category=${encodeURIComponent(category)}`;
         displayText = category === 'mới nhất' ? 'Sản phẩm mới' : typeMap[category] || category.charAt(0).toUpperCase() + category.slice(1);
+        breadcrumbText += `<a href="${href}">${displayText}</a>`;
+    } else {
+        // Default case, make "Sản phẩm" clickable to the product page
+        breadcrumbText += `<a href="${href}">${displayText}</a>`;
     }
 
-    breadcrumbText += `<a href="${href}">${displayText}</a>`;
     breadcrumbContainer.innerHTML = breadcrumbText;
     console.log('Breadcrumb rendered:', breadcrumbText);
 }
@@ -1577,11 +1974,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const expandableSections = document.querySelectorAll('.expandable');
 
     expandableSections.forEach(section => {
-        const title = section.querySelector('.section-title');
+        const title = section.querySelector('.content-wrapper');
         const content = section.querySelector('.section-content');
+        const arrow = section.querySelector('.arrow');
 
         title.addEventListener('click', () => {
             content.classList.toggle('active');
+            if (arrow) {
+                arrow.classList.toggle('rotated');
+            }
         });
     });
 });
@@ -1600,10 +2001,155 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const showNewsButton = document.getElementById('showNews');
+
+    showNewsButton.addEventListener('click', () => {
+        const hiddenNewsItems = document.querySelectorAll(".news-item:nth-child(n+5)");
+
+        hiddenNewsItems.forEach(item => {
+            item.style.display = item.style.display === "block" ? "none" : "block";
+        });
+
+        showNewsButton.style.display = 'none'; // Hide the button
+    });
+});
+
+
+function setupHeaderScroll() {
+    const logoMenu = document.querySelector('.logo-and-menu');
+    const navIcons = document.querySelectorAll('.nav-icons .icon');
+    const menuSpan = document.querySelector('.menu-span');
+    const brandText = document.querySelector('.brand');
+    const cartBadge = document.querySelector('.shopping-bag .cart-badge');
+
+    // Check if critical element exists
+    if (!logoMenu) {
+        console.warn('Element with class .logo-and-menu not found. Skipping setupHeaderScroll.');
+        return;
+    }
+
+    // Log warnings for other missing elements
+    if (navIcons.length === 0) console.warn('No elements with class .nav-icons .icon found');
+    if (!menuSpan) console.warn('Element with class .menu-span not found');
+    if (!brandText) console.warn('Element with class .brand not found');
+    if (!cartBadge) console.log('No cart badge found (normal if cart is empty)');
+
+    // Define image source mappings
+    const imageSources = {
+        'shopping-bag': {
+            original: 'img/white-shopping-bar.png',
+            alternate: 'img/shoppingbag.png'
+        },
+        'search': {
+            original: 'img/white-search-bar.png',
+            alternate: 'img/searchbar.png'
+        },
+        'menu': {
+            original: 'img/white-hamburger-menu.png',
+            alternate: 'img/hamburger-menu.png'
+        }
+    };
+
+    // Store initial padding of logoMenu
+    const initialPadding = window.getComputedStyle(logoMenu).padding || '15px 18%';
+
+    // Check if viewport is mobile (600px or less)
+    const isMobile = () => window.innerWidth <= 600;
+
+    // Handle scroll event
+    function handleScroll() {
+        const scrolled = window.scrollY > 50;
+
+        // Update background and transition
+        logoMenu.style.backgroundColor = scrolled ? 'white' : 'transparent';
+        logoMenu.style.padding = isMobile()
+            ? (scrolled ? '20px 10px' : '15px 10px') // No left/right padding on mobile
+            : (scrolled ? '15px 10%' : initialPadding);
+        logoMenu.style.transition = 'background-color 0.3s ease, padding 0.3s ease';
+
+        // Update menu text color
+        if (menuSpan) {
+            menuSpan.style.color = scrolled ? 'black' : 'white';
+            menuSpan.style.transition = 'color 0.3s ease';
+        }
+
+        // Update brand text color
+        if (brandText) {
+            brandText.style.color = scrolled ? 'black' : 'white';
+            brandText.style.transition = 'color 0.3s ease';
+        }
+
+        // Update icon sources
+        navIcons.forEach(icon => {
+            const parentLi = icon.closest('li');
+            if (parentLi) {
+                const className = parentLi.classList[0];
+                if (imageSources[className]) {
+                    icon.src = scrolled ? imageSources[className].alternate : imageSources[className].original;
+                    icon.style.transition = 'opacity 0.3s ease';
+                } else {
+                    console.warn(`No image source defined for class: ${className}`);
+                }
+            }
+        });
+
+        // Update cart badge color
+        if (cartBadge) {
+            cartBadge.style.color = scrolled ? 'black' : 'white';
+            cartBadge.style.transition = 'color 0.3s ease';
+        }
+    }
+
+    // Initialize scroll listener
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll); // Update on resize
+    console.log('Header scroll listener added');
+
+    // Initial call to set correct state on page load
+    handleScroll();
+}
+
+function setupHeaderSlide() {
+    const headerContainer = document.querySelector('.header-container');
+    const header = document.querySelector('.header');
+    let lastScrollY = window.scrollY;
+    let isHeaderVisible = true;
+
+    if (!headerContainer || !header) {
+        console.warn('Header container or header not found');
+        return;
+    }
+
+    const headerHeight = header.offsetHeight;
+
+    function handleScroll() {
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY > lastScrollY && currentScrollY > 50;
+
+        if (scrollingDown && isHeaderVisible) {
+            // Slide up header-container by header height
+            headerContainer.style.transform = `translateY(-${headerHeight}px)`;
+            isHeaderVisible = false;
+        } else if (currentScrollY <= 10 && !isHeaderVisible) {
+            // Slide down header-container only when near the top
+            headerContainer.style.transform = 'translateY(0)';
+            isHeaderVisible = true;
+        }
+
+        lastScrollY = currentScrollY;
+    }
+
+    // Initialize scroll listener
+    window.addEventListener('scroll', handleScroll);
+
+    // Initial call to set correct state on page load
+    handleScroll();
+}
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("Initializing page:", window.location.pathname);
-
     initializeSidebar();
     initializeServicesScroll();
     initializeColumnToggle();
@@ -1613,20 +2159,79 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupSearch(products);
     setupCustomNav(products);
     updateHeadingFromURL();
-    renderProductDetails(products);
+    renderProductDetails();
     renderBreadcrumb();
+
+    const params = new URLSearchParams(window.location.search);
+    const newsId = params.get('newsId');
 
     if (window.location.pathname.includes("index.html") || window.location.pathname === "/") {
         renderProducts(products, "new-arrivals", 0, 5);
-        renderProducts(products, "our-collection-1", 0, 5);
-        renderProducts(products, "our-collection-2", 0, 5);
+        renderProducts(products, "our-collection", 0, 10);
+        const news = await fetchNews();
+        renderNews(news, "newsGrid", 0);
+    } else if (window.location.pathname.includes("news-page.html")) {
+        const news = await fetchNews();
+        renderNews(news, "newsGrid", 0);
+        setupPagination();
+    } else if (window.location.pathname.includes("news-details.html")) {
+        const newsContent = document.getElementById('news-content');
+        const newsTitle = document.querySelector('.news-title');
+        const backButton = document.getElementById('back-to-news');
+        
+        if (!newsContent || !newsTitle) {
+            console.error('Required DOM elements not found:', {
+                newsContent: !!newsContent,
+                newsTitle: !!newsTitle
+            });
+            newsContent.innerHTML = `<p class="text-red-600 text-center">Error: Page elements missing.</p>`;
+            return;
+        }
+
+        if (!newsId) {
+            console.error('No newsId provided in URL');
+            newsContent.innerHTML = `<p class="text-red-600 text-center">No news article specified.</p>`;
+            return;
+        }
+
+        console.log('Fetching news article for newsId:', newsId);
+        const newsItem = await fetchNewsById(newsId);
+        console.log('Fetched news item:', newsItem);
+
+        if (newsItem.error || !newsItem || !newsItem.content) {
+            console.error('Failed to fetch news item or invalid data:', newsItem.error || 'No content available');
+            newsContent.innerHTML = `<p class="text-red-600 text-center">Error loading news article. Please try again later.</p>`;
+            return;
+        }
+
+        // Sanitize and render content
+        newsContent.innerHTML = newsItem.content;
+        newsTitle.textContent = newsItem.title || 'Tin tức';
+        newsTitle.scrollIntoView({ behavior: 'smooth' });
+
+        // Update breadcrumb to reflect article title
+        const breadcrumbSpan = document.querySelector('.breadcrumb span');
+        if (breadcrumbSpan) {
+            breadcrumbSpan.textContent = newsItem.title || 'Bài viết';
+        }
+
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                console.log('Back to news clicked');
+                window.location.href = 'news-page.html';
+            });
+        } else {
+            console.warn('Back button not found');
+        }
     } else if (window.location.pathname.includes("product-details.html")) {
-        renderProducts(products, "suggestion", 0, 5);
+        renderProducts(products, "suggestion", 0);
     } else if (window.location.pathname.includes("product-page.html")) {
-        const params = new URLSearchParams(window.location.search);
         const brand = params.get('brand');
         if (brand) {
-            const filteredProducts = products.filter(product => product.brand === brand);
+            const filteredProducts = products.filter(product =>
+                product.brand.toLowerCase() === brand.toLowerCase() ||
+                brandMap[product.brand.toLowerCase()]?.toLowerCase() === brand.toLowerCase()
+            );
             renderProducts(filteredProducts, "all-products");
         } else {
             renderProducts(products, "all-products");
@@ -1639,6 +2244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (window.location.pathname.includes("confirmation.html")) {
         renderConfirmationPage();
     }
+
     await setupBrandFilters(products);
 
     window.addEventListener('popstate', () => {
@@ -1647,7 +2253,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const params = new URLSearchParams(window.location.search);
         const brand = params.get('brand');
         if (brand) {
-            const filteredProducts = products.filter(product => product.brand === brand);
+            const filteredProducts = products.filter(product =>
+                product.brand.toLowerCase() === brand.toLowerCase() ||
+                brandMap[product.brand.toLowerCase()]?.toLowerCase() === brand.toLowerCase()
+            );
             renderProducts(filteredProducts, "all-products");
         } else {
             renderProducts(products, "all-products");
@@ -1685,5 +2294,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         cartModal.addEventListener('click', (e) => {
             if (e.target === cartModal) cartModal.style.display = 'none';
         });
+    }
+
+    const pagesWithHeader = ['index.html', 'product-page.html', 'product-details.html', 'news-page.html', 'news-details.html', '/'];
+    if (pagesWithHeader.some(page => window.location.pathname.includes(page) || window.location.pathname === page)) {
+        console.log("Setting up header scroll and slide");
+        setupHeaderScroll();
+        setupHeaderSlide();
+    } else {
+        console.log("Skipping header setup on this page");
     }
 });

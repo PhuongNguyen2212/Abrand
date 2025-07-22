@@ -5,127 +5,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main-page.css">
-    <title>Trang chủ</title>
+    <title>Giang Kim Hoàn Jewellry</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
     <div id="cart-announcement" class="cart-announcement"> <img src="img/i.png" alt=""> Your shopping bag is empty</div>
-    <header class="header">
-        <div class="link">Đặt lịch tư vấn ngay</div>
-        <div class="arrow">></div>
-    </header>
+    <div class="header-container">
+        <div class="header">
+            <div class="link">Đặt lịch tư vấn ngay</div>
+            <div class="arrow"><img src="img/right-arrow.png" alt=""></div>
+        </div>
+        <div class="logo-and-menu">
+            <a href="index.html" class="brand-link">
+                <div class="brand">
+                    GIANG<br>KIM<br>HOAN
+                </div>
+            </a>
+            <ul class="nav-icons">
+                <li class="shopping-bag">
+                    <img src="img/white-shopping-bar.png" alt="Giỏ Hàng" aria-label="Giỏ Hàng" class="icon">
+                </li>
+                <li class="search">
+                    <img src="img/white-search-bar.png" alt="Tìm kiếm" aria-label="Tìm kiếm" class="icon">
+                </li>
+                <li class="menu xai-sidebar-toggle" id="xai-sidebar-toggle">
+                    <img src="img/white-hamburger-menu.png" alt="Menu" aria-label="Menu" class="icon">
+                </li>
+                <span class="menu-span">MENU</span>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Single Sidebar -->
+    <div id="xai-sidebar" class="xai-sidebar">
+        <div class="xai-close-btn" id="xai-sidebar-close">
+            <div><img src="img/close.png" alt=""></div>
+        </div>
+        <!-- Main Menu Content -->
+        <div id="xai-main-content" class="xai-content xai-content-visible">
+            <div class="xai-menu-item-container" data-title="TRANG SỨC">
+                <div class="xai-menu-item">TRANG SỨC</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="DỊCH VỤ">
+                <div class="xai-menu-item">DỊCH VỤ</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="QUÝ TRÌNH SẢN XUẤT">
+                <div class="xai-menu-item">QUÝ TRÌNH SẢN XUẤT</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="ƯU ĐÃI">
+                <div class="xai-menu-item">ƯU ĐÃI</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="VỀ CHÚNG TÔI">
+                <div class="xai-menu-item">VỀ CHÚNG TÔI</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="TIN TỨC">
+                <div class="xai-menu-item">TIN TỨC</div>
+                <span>></span>
+            </div>
+            <div class="xai-menu-item-container" data-title="LOGIN">
+                <div class="xai-menu-item">LOGIN</div>
+                <span>></span>
+            </div>
+        </div>
+        <!-- First-Level Submenu Content -->
+        <div id="xai-submenu-content" class="xai-content xai-content-hidden">
+            <div class="flex items-center">
+                <div class="xai-back-btn" id="xai-back-button">
+                    <img src="img/back-img.png" alt="">
+                    <span>Back</span>
+                </div>
+                <div id="xai-submenu-title" class="text-lg font-bold"></div>
+            </div>
+            <div id="xai-submenu-list"></div>
+        </div>
+        <!-- Second-Level Submenu Content -->
+        <div id="xai-sub-submenu-content" class="xai-content xai-content-hidden">
+            <div class="flex items-center">
+                <div class="xai-back-btn" id="xai-sub-submenu-back-button">
+                    <img src="img/back-img.png" alt="">
+                    <span>Back</span>
+                </div>
+                <div id="xai-sub-submenu-title" class="text-lg font-bold"></div>
+            </div>
+            <div id="xai-sub-submenu-list"></div>
+        </div>
+        <div class="contact-info">
+            <span>Chúng tôi có thể giúp gì cho bạn?</span>
+            <span>+84 88843434</span>
+        </div>
+    </div>
+
 
     <section class="main-container">
         <div class="container-banner">
             <div class="content">
-                <div class="logo-and-menu">
-                    <a href="index.html" class="brand-link">
-                        <div class="brand">
-                            GIANG<br>KIM<br>HOAN
-                        </div>
-                    </a>
-                    <ul class="nav-icons">
-                        <li class="shopping-bag">
-                            <img src="img/white-shopping-bar.png" alt="Giỏ Hàng" aria-label="Giỏ Hàng" class="icon">
-                        </li>
-                        <li class="search">
-                            <img src="img/white-search-bar.png" alt="Tìm kiếm" aria-label="Tìm kiếm" class="icon">
-                        </li>
-                        <li class="menu xai-sidebar-toggle" id="xai-sidebar-toggle">
-                            <img src="img/white-hamburger-menu.png" alt="Menu" aria-label="Menu" class="icon">
-                        </li>
-                        <span class="menu-span">MENU</span>
-                    </ul>
-                </div>
                 <div class="button-information">
                     <span class="banner-text">Bộ sưu tập vòng tay</span>
-                    <a href="#" class="banner-button">Xem ngay</a>
+                    <a href="product-page.html?type=Ring" class="banner-button">MUA NGAY</a>
                 </div>
             </div>
-            <!-- Single Sidebar -->
-            <div id="xai-sidebar" class="xai-sidebar">
-                <div class="xai-close-btn" id="xai-sidebar-close">
-                    <div><img src="img/close.png" alt=""></div>
+        </div>
+        <!-- Modal overlay -->
+        <div class="modal-overlay" id="cartModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>ADDED TO SHOPPING BAG</h2>
+                    <button class="close-btn" onclick="closeModal()">×</button>
                 </div>
-                <!-- Main Menu Content -->
-                <div id="xai-main-content" class="xai-content xai-content-visible">
-                    <div class="xai-menu-item-container" data-title="TRANG SỨC">
-                        <div class="xai-menu-item">TRANG SỨC</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="DỊCH VỤ">
-                        <div class="xai-menu-item">DỊCH VỤ</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="QUÝ TRÌNH SẢN XUẤT">
-                        <div class="xai-menu-item">QUÝ TRÌNH SẢN XUẤT</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="ƯU ĐÃI">
-                        <div class="xai-menu-item">ƯU ĐÃI</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="VỀ CHÚNG TÔI">
-                        <div class="xai-menu-item">VỀ CHÚNG TÔI</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="TIN TỨC">
-                        <div class="xai-menu-item">TIN TỨC</div>
-                        <span>></span>
-                    </div>
-                    <div class="xai-menu-item-container" data-title="LOGIN">
-                        <div class="xai-menu-item">LOGIN</div>
-                        <span>></span>
-                    </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Product items will be dynamically inserted here -->
                 </div>
-                <!-- First-Level Submenu Content -->
-                <div id="xai-submenu-content" class="xai-content xai-content-hidden">
-                    <div class="flex items-center">
-                        <div class="xai-back-btn" id="xai-back-button">
-                            <div></div>
-                            <span>Back</span>
-                        </div>
-                        <div id="xai-submenu-title" class="text-lg font-bold"></div>
-                    </div>
-                    <div id="xai-submenu-list"></div>
-                </div>
-                <!-- Second-Level Submenu Content -->
-                <div id="xai-sub-submenu-content" class="xai-content xai-content-hidden">
-                    <div class="flex items-center">
-                        <div class="xai-back-btn" id="xai-sub-submenu-back-button">
-                            <div></div>
-                            <span>Back</span>
-                        </div>
-                        <div id="xai-sub-submenu-title" class="text-lg font-bold"></div>
-                    </div>
-                    <div id="xai-sub-submenu-list"></div>
-                </div>
-                <div class="contact-info">
-                    <span>Chúng tôi nếu giá đã chọn?</span>
-                    <span>+84 88843434</span>
-                </div>
-            </div>
-            <!-- Modal overlay -->
-            <div class="modal-overlay" id="cartModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>ADDED TO SHOPPING BAG</h2>
-                        <button class="close-btn" onclick="closeModal()">×</button>
-                    </div>
-                    <div class="modal-body" id="modal-body">
-                        <!-- Product items will be dynamically inserted here -->
-                    </div>
-                    <div class="modal-footer">
-                        <button class="checkout-btn" onclick="checkout()">THANH TOÁN</button>
-                        <button class="zalo-btn" onclick="contactZalo()">LIÊN HỆ TRỰC TIẾP ZALO</button>
-                    </div>
+                <div class="modal-footer">
+                    <button class="checkout-btn" onclick="checkout()">THANH TOÁN</button>
+                    <button class="zalo-btn" onclick="contactZalo()">LIÊN HỆ TRỰC TIẾP ZALO</button>
                 </div>
             </div>
         </div>
         <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." aria-label="Nhập để tìm kiếm sản phẩm">
         <div id="searchResults" class="search-results"></div>
     </section>
+
+    <h2 class="section-title first-title">BRANDS</h2>
 
     <div class="brand-container">
         <a href="#" class="brand-item" data-brand="Cartier">
@@ -146,8 +152,8 @@
         </a>
     </div>
 
-    <h2 class="section-title">New Arrivals</h2>
-    <section class="new-arrivals-container" id="new-arrivals">
+    <h2 class="section-title">NEW ARRIVALS</h2>
+    <section class="new-arrivals-container one" id="new-arrivals">
         <!-- Products will be dynamically inserted here -->
     </section>
 
@@ -155,47 +161,47 @@
         <div class="container-banner banner-two">
             <div class="content">
                 <span class="banner-text">Ưu đãi tháng 6</span>
-                <a href="#" class="banner-button">Xem ngay</a>
+                <a href="product-page.html" class="banner-button">MUA NGAY</a>
             </div>
         </div>
     </section>
 
-    <h2 class="section-title">Our collection</h2>
-    <section class="new-arrivals-container" id="our-collection-1">
+    <h2 class="section-title">OUR COLLECTION</h2>
+    <section class="new-arrivals-container two" id="our-collection">
         <!-- Products will be dynamically inserted here -->
     </section>
 
-    <section class="new-arrivals-container" id="our-collection-2">
-        <!-- Products will be dynamically inserted here -->
-    </section>
-
+    <h2 class="section-title">SERVICES</h2>
     <section class="services">
         <div class="service-item">
             <img src="img/40.png" alt="Service 1" class="service-icon">
             <span class="title">CUSTOM TRANG SỨC</span>
-            <span class="content">Với những nghệ nhân kim hoàn dày dặn kinh nghiệm, Giang Kim Hoàn có thể biến những câu
+            <span class="content">Với những nghệ nhân kim hoàn dày dặn kinh nghiệm, Giang Kim Hoàn có thể biến những
+                câu
                 chuyện của bạn thành những món trang sức đầy cảm xúc.</span>
         </div>
         <div class="service-item">
             <img src="img/41.png" alt="Service 2" class="service-icon">
             <span class="title">ĐẶT LỊCH HẸN TẠI CỬA HÀNG</span>
-            <span class="content">Với những nghệ nhân kim hoàn dày dặn kinh nghiệm, Giang Kim Hoàn có thể biến những câu
+            <span class="content">Với những nghệ nhân kim hoàn dày dặn kinh nghiệm, Giang Kim Hoàn có thể biến những
+                câu
                 chuyện của bạn thành những món trang sức đầy cảm xúc.</span>
         </div>
         <div class="service-item">
             <img src="img/42.png" alt="Service 3" class="service-icon">
             <span class="title">ART OF GIFTING</span>
-            <span class="content">Với những nghệ nhân kim hoàn dày dặn kinh nghiệm, Giang Kim Hoàn có thể biến những câu
+            <span class="content">Với những nghệ nhân kim hoàn dày dặn kinh nghiệm, Giang Kim Hoàn có thể biến những
+                câu
                 chuyện của bạn thành những món trang sức đầy cảm xúc.</span>
         </div>
     </section>
 
-    <h2 class="section-title">Services</h2>
+
     <section class="promotion-container">
         <div class="container-banner banner-three">
             <div class="content">
                 <span class="banner-text">Về chúng tôi</span>
-                <a href="#" class="banner-button">Xem ngay</a>
+                <a href="news-page.html" class="banner-button">XEM NGAY</a>
             </div>
         </div>
     </section>
@@ -204,7 +210,10 @@
         <div class="footer">
             <div class="footer-container first">
                 <div class="column help">
-                    <h3>Chúng tôi có thể giúp gì cho bạn</h3>
+                    <div class="column-wrapper">
+                        <h3>Chúng tôi có thể giúp gì cho bạn</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="product-page.html">Giới thiệu</a></li>
@@ -215,7 +224,10 @@
                     </div>
                 </div>
                 <div class="column service">
-                    <h3>Về chúng tôi</h3>
+                    <div class="column-wrapper">
+                        <h3>Về chúng tôi</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="ve-giang-kim-hoan.html">Về Giang Kim Hoàn</a></li>
@@ -223,7 +235,10 @@
                     </div>
                 </div>
                 <div class="column notification">
-                    <h3>Đăng ký nhận email</h3>
+                    <div class="column-wrapper">
+                        <h3>Đăng ký nhận email</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li>Đăng ký nhận thông tin về sản phẩm và ưu đãi mới nhất từ GKH</li>
@@ -236,7 +251,10 @@
             </div>
             <div class="footer-container second">
                 <div class="column help">
-                    <h3>Dịch vụ của Giang Kim Hoan</h3>
+                    <div class="column-wrapper">
+                        <h3>Dịch vụ của Giang Kim Hoan</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="custom-trang-suc.html">Custom trang sức</a></li>
@@ -246,7 +264,10 @@
                     </div>
                 </div>
                 <div class="column notification">
-                    <h3>Tin tức</h3>
+                    <div class="column-wrapper">
+                        <h3>Tin tức</h3>
+                        <img src="img/down.png" alt="Mở danh mục" class="arrow w-3 h-3">
+                    </div>
                     <div class="content-wrapper">
                         <ul>
                             <li><a href="news-page.html">Tin tức trang sức</a></li>
@@ -256,7 +277,7 @@
                 </div>
             </div>
             <div class="brand">
-                GIANG<br>KIM<br>HOAN
+                GIANG <br> KIM <br> HOAN
             </div>
         </div>
     </footer>
