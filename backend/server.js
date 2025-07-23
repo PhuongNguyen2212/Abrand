@@ -10,7 +10,7 @@ require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const UPLOADS_DIR = path.join("/", "backend", "uploads"); // Root-level /backend/uploads directory
+const UPLOADS_DIR = path.join(__dirname, "uploads"); // Creates 'uploads' folder in /opt/render/project/src/backend/uploads
 const ALLOWED_BRANDS = ["Cartier", "Bvlgari", "Van Cleef & Arpels", "Chrome Hearts", "GKH Jewelry", "Louis Vuiton", "Chanel"];
 const ALLOWED_TYPES = ["Ring", "Necklace", "Bracelet", "Collar", "Earring"];
 const ALLOWED_MATERIALS = ["Vàng 10k", "Vàng 18k", "Bạc", "Bạch kim"];
