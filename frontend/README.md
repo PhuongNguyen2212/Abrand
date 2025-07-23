@@ -1,1 +1,0 @@
-"# GKH_PROTOTYPE" 
